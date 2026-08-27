@@ -20,17 +20,17 @@ export default function ModulePage() {
 
       <div className="flex flex-wrap gap-3">
         {module.algorithmId && (
-          <Link to={`/algorithm/${module.algorithmId}`} className="px-4 py-2 rounded-lg bg-clinical-600 text-white text-sm font-medium hover:bg-clinical-700">
+          <Link to="/algorithm/$algorithmId" params={{ algorithmId: module.algorithmId }} className="px-4 py-2 rounded-lg bg-clinical-600 text-white text-sm font-medium hover:bg-clinical-700">
             Open Interactive Algorithm
           </Link>
         )}
         {module.scenarioId && (
-          <Link to={`/simulation/${module.scenarioId}`} className="px-4 py-2 rounded-lg border border-slate-300 text-sm font-medium hover:bg-slate-50">
+          <Link to="/simulation/$scenarioId" params={{ scenarioId: module.scenarioId }} className="px-4 py-2 rounded-lg border border-slate-300 text-sm font-medium hover:bg-slate-50">
             Enter Scenario
           </Link>
         )}
         {module.quizId && (
-          <Link to={`/quiz/${module.quizId}`} className="px-4 py-2 rounded-lg border border-slate-300 text-sm font-medium hover:bg-slate-50">
+          <Link to="/quiz/$quizId" params={{ quizId: module.quizId }} className="px-4 py-2 rounded-lg border border-slate-300 text-sm font-medium hover:bg-slate-50">
             Take Quiz
           </Link>
         )}

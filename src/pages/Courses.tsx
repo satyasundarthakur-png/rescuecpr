@@ -8,7 +8,7 @@ export default function Courses() {
       <p className="text-slate-500 text-sm mb-6">Six guideline-aligned training frameworks.</p>
       <div className="grid md:grid-cols-3 gap-4">
         {courses.map((c) => (
-          <Link key={c.id} to={`/courses/${c.id}`}
+          <Link key={c.id} to="/courses/$courseId" params={{ courseId: c.id }}
             className="bg-white border border-slate-200 rounded-xl p-5 hover:border-clinical-300 hover:shadow-sm transition">
             <div className="text-xs font-semibold tracking-wide text-clinical-600">{c.key}</div>
             <div className="mt-1 font-semibold text-slate-900">{c.subtitle}</div>

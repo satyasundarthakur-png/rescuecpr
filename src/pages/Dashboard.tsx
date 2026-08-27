@@ -42,7 +42,7 @@ export default function Dashboard() {
             <div className="font-semibold text-slate-900">{continueModule.title}</div>
             <div className="text-xs text-slate-500 mt-1">68% complete</div>
           </div>
-          <Link to={`/module/${continueModule.id}`} className="px-4 py-2 bg-clinical-600 text-white rounded-lg text-sm font-medium hover:bg-clinical-700">
+          <Link to="/module/$moduleId" params={{ moduleId: continueModule.id }} className="px-4 py-2 bg-clinical-600 text-white rounded-lg text-sm font-medium hover:bg-clinical-700">
             Resume
           </Link>
         </div>
@@ -66,7 +66,7 @@ export default function Dashboard() {
             Team communication and time-critical response are your lowest-scoring dimensions.
             Revisit the ACLS shockable-rhythm scenario to reinforce decision speed.
           </p>
-          <Link to="/simulation/scn-acls-1" className="inline-block mt-3 text-sm font-medium text-clinical-600 hover:text-clinical-700">
+          <Link to="/simulation/$scenarioId" params={{ scenarioId: "scn-acls-1" }} className="inline-block mt-3 text-sm font-medium text-clinical-600 hover:text-clinical-700">
             Practice now →
           </Link>
         </div>

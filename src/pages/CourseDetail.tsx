@@ -26,7 +26,7 @@ export default function CourseDetail() {
       <div className="space-y-3">
         <div className="text-sm font-medium text-slate-500">Modules</div>
         {courseModules.map((m) => (
-          <Link key={m.id} to={`/module/${m.id}`}
+          <Link key={m.id} to="/module/$moduleId" params={{ moduleId: m.id }}
             className="block bg-white border border-slate-200 rounded-xl p-4 hover:border-clinical-300">
             <div className="flex items-center justify-between">
               <div>
