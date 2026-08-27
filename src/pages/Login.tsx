@@ -45,7 +45,7 @@ export default function Login() {
             {(['learner', 'instructor', 'admin'] as Role[]).map((role) => (
               <button
                 key={role}
-                onClick={() => { signInDemo(role); navigate(role === 'instructor' || role === 'admin' ? '/instructor' : '/dashboard') }}
+                onClick={() => { signInDemo(role); navigate({ to: role === 'instructor' || role === 'admin' ? '/instructor' : '/dashboard' }) }}
                 className="w-full border border-slate-300 rounded-lg py-2 text-sm font-medium capitalize hover:bg-slate-50"
               >
                 Continue as {role}
