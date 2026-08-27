@@ -21,7 +21,7 @@ export function startAlgorithm(algorithm: Algorithm): AlgorithmRunState {
 }
 
 export function currentNode(algorithm: Algorithm, state: AlgorithmRunState): AlgorithmNode {
-  return algorithm.nodes[state.currentNodeId]
+  return algorithm.nodes[state.currentNodeId]!
 }
 
 /** Advance a linear (non-decision) node. */
@@ -45,7 +45,7 @@ function applyNext(algorithm: Algorithm, state: AlgorithmRunState, nextId: strin
     return { ...state, finishedAt: Date.now() }
   }
   const nextNode = algorithm.nodes[nextId]
-  const finished = nextNode.type === 'END'
+  const finished = nextNode!.type === 'END'
   return {
     ...state,
     currentNodeId: nextId,

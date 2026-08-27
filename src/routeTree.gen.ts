@@ -10,33 +10,178 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppRouteRouteImport } from './routes/_app/route'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AppCertificatesRouteImport } from './routes/_app/certificates'
+import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
+import { Route as AppInstructorRouteImport } from './routes/_app/instructor'
+import { Route as AppProgressRouteImport } from './routes/_app/progress'
+import { Route as AppAlgorithmAlgorithmIdRouteImport } from './routes/_app/algorithm/$algorithmId'
+import { Route as AppCoursesIndexRouteImport } from './routes/_app/courses/index'
+import { Route as AppCoursesCourseIdRouteImport } from './routes/_app/courses/$courseId'
+import { Route as AppModuleModuleIdRouteImport } from './routes/_app/module/$moduleId'
+import { Route as AppQuizQuizIdRouteImport } from './routes/_app/quiz/$quizId'
+import { Route as AppSimulationScenarioIdRouteImport } from './routes/_app/simulation/$scenarioId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppRouteRoute = AppRouteRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppCertificatesRoute = AppCertificatesRouteImport.update({
+  id: '/certificates',
+  path: '/certificates',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppDashboardRoute = AppDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppInstructorRoute = AppInstructorRouteImport.update({
+  id: '/instructor',
+  path: '/instructor',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppProgressRoute = AppProgressRouteImport.update({
+  id: '/progress',
+  path: '/progress',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppAlgorithmAlgorithmIdRoute = AppAlgorithmAlgorithmIdRouteImport.update({
+  id: '/algorithm/$algorithmId',
+  path: '/algorithm/$algorithmId',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppCoursesIndexRoute = AppCoursesIndexRouteImport.update({
+  id: '/courses/',
+  path: '/courses/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppCoursesCourseIdRoute = AppCoursesCourseIdRouteImport.update({
+  id: '/courses/$courseId',
+  path: '/courses/$courseId',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppModuleModuleIdRoute = AppModuleModuleIdRouteImport.update({
+  id: '/module/$moduleId',
+  path: '/module/$moduleId',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppQuizQuizIdRoute = AppQuizQuizIdRouteImport.update({
+  id: '/quiz/$quizId',
+  path: '/quiz/$quizId',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+const AppSimulationScenarioIdRoute = AppSimulationScenarioIdRouteImport.update({
+  id: '/simulation/$scenarioId',
+  path: '/simulation/$scenarioId',
+  getParentRoute: () => AppRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/certificates': typeof AppCertificatesRoute
+  '/dashboard': typeof AppDashboardRoute
+  '/instructor': typeof AppInstructorRoute
+  '/progress': typeof AppProgressRoute
+  '/algorithm/$algorithmId': typeof AppAlgorithmAlgorithmIdRoute
+  '/courses/$courseId': typeof AppCoursesCourseIdRoute
+  '/module/$moduleId': typeof AppModuleModuleIdRoute
+  '/quiz/$quizId': typeof AppQuizQuizIdRoute
+  '/simulation/$scenarioId': typeof AppSimulationScenarioIdRoute
+  '/courses/': typeof AppCoursesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/certificates': typeof AppCertificatesRoute
+  '/dashboard': typeof AppDashboardRoute
+  '/instructor': typeof AppInstructorRoute
+  '/progress': typeof AppProgressRoute
+  '/algorithm/$algorithmId': typeof AppAlgorithmAlgorithmIdRoute
+  '/courses/$courseId': typeof AppCoursesCourseIdRoute
+  '/module/$moduleId': typeof AppModuleModuleIdRoute
+  '/quiz/$quizId': typeof AppQuizQuizIdRoute
+  '/simulation/$scenarioId': typeof AppSimulationScenarioIdRoute
+  '/courses': typeof AppCoursesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_app': typeof AppRouteRouteWithChildren
+  '/login': typeof LoginRoute
+  '/_app/certificates': typeof AppCertificatesRoute
+  '/_app/dashboard': typeof AppDashboardRoute
+  '/_app/instructor': typeof AppInstructorRoute
+  '/_app/progress': typeof AppProgressRoute
+  '/_app/algorithm/$algorithmId': typeof AppAlgorithmAlgorithmIdRoute
+  '/_app/courses/$courseId': typeof AppCoursesCourseIdRoute
+  '/_app/module/$moduleId': typeof AppModuleModuleIdRoute
+  '/_app/quiz/$quizId': typeof AppQuizQuizIdRoute
+  '/_app/simulation/$scenarioId': typeof AppSimulationScenarioIdRoute
+  '/_app/courses/': typeof AppCoursesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/certificates'
+    | '/dashboard'
+    | '/instructor'
+    | '/progress'
+    | '/algorithm/$algorithmId'
+    | '/courses/$courseId'
+    | '/module/$moduleId'
+    | '/quiz/$quizId'
+    | '/simulation/$scenarioId'
+    | '/courses/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/login'
+    | '/certificates'
+    | '/dashboard'
+    | '/instructor'
+    | '/progress'
+    | '/algorithm/$algorithmId'
+    | '/courses/$courseId'
+    | '/module/$moduleId'
+    | '/quiz/$quizId'
+    | '/simulation/$scenarioId'
+    | '/courses'
+  id:
+    | '__root__'
+    | '/'
+    | '/_app'
+    | '/login'
+    | '/_app/certificates'
+    | '/_app/dashboard'
+    | '/_app/instructor'
+    | '/_app/progress'
+    | '/_app/algorithm/$algorithmId'
+    | '/_app/courses/$courseId'
+    | '/_app/module/$moduleId'
+    | '/_app/quiz/$quizId'
+    | '/_app/simulation/$scenarioId'
+    | '/_app/courses/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppRouteRoute: typeof AppRouteRouteWithChildren
+  LoginRoute: typeof LoginRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +193,127 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/certificates': {
+      id: '/_app/certificates'
+      path: '/certificates'
+      fullPath: '/certificates'
+      preLoaderRoute: typeof AppCertificatesRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/dashboard': {
+      id: '/_app/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/instructor': {
+      id: '/_app/instructor'
+      path: '/instructor'
+      fullPath: '/instructor'
+      preLoaderRoute: typeof AppInstructorRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/progress': {
+      id: '/_app/progress'
+      path: '/progress'
+      fullPath: '/progress'
+      preLoaderRoute: typeof AppProgressRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/algorithm/$algorithmId': {
+      id: '/_app/algorithm/$algorithmId'
+      path: '/algorithm/$algorithmId'
+      fullPath: '/algorithm/$algorithmId'
+      preLoaderRoute: typeof AppAlgorithmAlgorithmIdRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/courses/': {
+      id: '/_app/courses/'
+      path: '/courses'
+      fullPath: '/courses/'
+      preLoaderRoute: typeof AppCoursesIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/courses/$courseId': {
+      id: '/_app/courses/$courseId'
+      path: '/courses/$courseId'
+      fullPath: '/courses/$courseId'
+      preLoaderRoute: typeof AppCoursesCourseIdRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/module/$moduleId': {
+      id: '/_app/module/$moduleId'
+      path: '/module/$moduleId'
+      fullPath: '/module/$moduleId'
+      preLoaderRoute: typeof AppModuleModuleIdRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/quiz/$quizId': {
+      id: '/_app/quiz/$quizId'
+      path: '/quiz/$quizId'
+      fullPath: '/quiz/$quizId'
+      preLoaderRoute: typeof AppQuizQuizIdRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/simulation/$scenarioId': {
+      id: '/_app/simulation/$scenarioId'
+      path: '/simulation/$scenarioId'
+      fullPath: '/simulation/$scenarioId'
+      preLoaderRoute: typeof AppSimulationScenarioIdRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
   }
 }
 
+interface AppRouteRouteChildren {
+  AppCertificatesRoute: typeof AppCertificatesRoute
+  AppDashboardRoute: typeof AppDashboardRoute
+  AppInstructorRoute: typeof AppInstructorRoute
+  AppProgressRoute: typeof AppProgressRoute
+  AppAlgorithmAlgorithmIdRoute: typeof AppAlgorithmAlgorithmIdRoute
+  AppCoursesCourseIdRoute: typeof AppCoursesCourseIdRoute
+  AppModuleModuleIdRoute: typeof AppModuleModuleIdRoute
+  AppQuizQuizIdRoute: typeof AppQuizQuizIdRoute
+  AppSimulationScenarioIdRoute: typeof AppSimulationScenarioIdRoute
+  AppCoursesIndexRoute: typeof AppCoursesIndexRoute
+}
+
+const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppCertificatesRoute: AppCertificatesRoute,
+  AppDashboardRoute: AppDashboardRoute,
+  AppInstructorRoute: AppInstructorRoute,
+  AppProgressRoute: AppProgressRoute,
+  AppAlgorithmAlgorithmIdRoute: AppAlgorithmAlgorithmIdRoute,
+  AppCoursesCourseIdRoute: AppCoursesCourseIdRoute,
+  AppModuleModuleIdRoute: AppModuleModuleIdRoute,
+  AppQuizQuizIdRoute: AppQuizQuizIdRoute,
+  AppSimulationScenarioIdRoute: AppSimulationScenarioIdRoute,
+  AppCoursesIndexRoute: AppCoursesIndexRoute,
+}
+
+const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
+  AppRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRouteRoute: AppRouteRouteWithChildren,
+  LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

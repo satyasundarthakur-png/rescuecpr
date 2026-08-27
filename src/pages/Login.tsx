@@ -17,7 +17,7 @@ export default function Login() {
     if (!supabase) return
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) setError(error.message)
-    else navigate('/dashboard')
+    else navigate({ to: '/dashboard' })
   }
 
   return (

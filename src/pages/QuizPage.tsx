@@ -17,7 +17,7 @@ export default function QuizPage() {
 
   if (items.length === 0) return <div className="p-8">No questions available for this quiz.</div>
 
-  const question = items[index]
+  const question = items[index]!
   const finished = index >= items.length
 
   function submit() {
@@ -73,8 +73,8 @@ export default function QuizPage() {
           </button>
         ) : (
           <div className="mt-5">
-            <div className={`text-sm font-medium ${answers[answers.length - 1].correct ? 'text-success-500' : 'text-alert-500'}`}>
-              {answers[answers.length - 1].correct ? 'Correct' : 'Not quite'}
+            <div className={`text-sm font-medium ${answers.at(-1)!.correct ? 'text-success-500' : 'text-alert-500'}`}>
+              {answers.at(-1)!.correct ? 'Correct' : 'Not quite'}
             </div>
             <p className="text-sm text-slate-600 mt-1">{question.explanation}</p>
             <button onClick={next} className="mt-4 px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium hover:bg-slate-50">
