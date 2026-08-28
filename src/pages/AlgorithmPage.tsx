@@ -1,12 +1,15 @@
 import { useMemo, useState } from 'react'
 import { useParams } from '@tanstack/react-router'
+import { LayoutList, Workflow } from 'lucide-react'
 import { algorithms } from '../data/seed'
 import { advance, choose, currentNode, score, startAlgorithm, type AlgorithmMode, type AlgorithmRunState } from '../engines/algorithmEngine'
+import BLSFlowchart from '../components/BLSFlowchart'
 
 export default function AlgorithmPage() {
   const { algorithmId } = useParams({ strict: false })
   const algorithm = algorithms.find((a) => a.id === algorithmId)
   const [mode, setMode] = useState<AlgorithmMode>('learn')
+  const [view, setView] = useState<'practice' | 'flowchart'>(algorithm?.courseKey === 'BLS' ? 'flowchart' : 'practice')
   const [state, setState] = useState<AlgorithmRunState | null>(algorithm ? startAlgorithm(algorithm) : null)
   const [feedback, setFeedback] = useState<string | null>(null)
 
@@ -30,23 +33,46 @@ export default function AlgorithmPage() {
 
   return (
     <div className="p-8 max-w-5xl mx-auto">
-      <div className="flex items-center justify-between mb-1">
+      <div className="flex items-center justify-between mb-1 flex-wrap gap-3">
         <h1 className="text-2xl font-semibold text-slate-900">{algorithm.title}</h1>
-        <div className="flex gap-2">
-          {(['learn', 'practice', 'test'] as AlgorithmMode[]).map((m) => (
-            <button key={m} onClick={() => { setMode(m); restart() }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium capitalize ${mode === m ? 'bg-clinical-600 text-white' : 'border border-slate-300 text-slate-600'}`}>
-              {m}
-            </button>
-          ))}
+        <div className="flex items-center gap-3">
+          {algorithm.courseKey === 'BLS' && (
+            <div className="flex items-center rounded-full border border-slate-200 bg-slate-50 p-0.5">
+              <button
+                onClick={() => setView('flowchart')}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${view === 'flowchart' ? 'bg-clinical-600 text-white shadow-sm' : 'text-slate-500 hover:text-clinical-700'}`}
+              >
+                <Workflow size={13} /> Flowchart
+              </button>
+              <button
+                onClick={() => setView('practice')}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${view === 'practice' ? 'bg-clinical-600 text-white shadow-sm' : 'text-slate-500 hover:text-clinical-700'}`}
+              >
+                <LayoutList size={13} /> Interactive Practice
+              </button>
+            </div>
+          )}
+          {view === 'practice' && (
+            <div className="flex gap-2">
+              {(['learn', 'practice', 'test'] as AlgorithmMode[]).map((m) => (
+                <button key={m} onClick={() => { setMode(m); restart() }}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium capitalize ${mode === m ? 'bg-clinical-600 text-white' : 'border border-slate-300 text-slate-600'}`}>
+                  {m}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
       {algorithm.reference.isDemoOnly && (
-        <div className="text-xs font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-4">
+        <div className="text-xs font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-4 mt-3">
           DEMO / NOT FOR CLINICAL USE — placeholder decision logic, pending clinical reviewer approval.
         </div>
       )}
 
+      {view === 'flowchart' && algorithm.courseKey === 'BLS' ? (
+        <BLSFlowchart />
+      ) : (
       <div className="grid md:grid-cols-[1fr_1.4fr] gap-6">
         <div className="bg-white border border-slate-200 rounded-xl p-4">
           <div className="text-xs font-medium text-slate-500 mb-3">Algorithm Map</div>
@@ -109,6 +135,7 @@ export default function AlgorithmPage() {
           )}
         </div>
       </div>
+      )}
     </div>
   )
 }
