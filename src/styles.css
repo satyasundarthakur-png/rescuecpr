@@ -172,3 +172,29 @@
     color: var(--color-foreground);
   }
 }
+
+@layer utilities {
+  .glow-clinical {
+    box-shadow: 0 0 0 rgba(0,0,0,0);
+    transition: box-shadow 0.25s ease, transform 0.2s ease;
+  }
+  .glow-clinical:hover {
+    box-shadow: 0 8px 30px -6px oklch(0.54 0.21 27 / 45%), 0 0 0 1px oklch(0.54 0.21 27 / 15%);
+    transform: translateY(-2px);
+  }
+  .glow-white {
+    transition: box-shadow 0.25s ease, transform 0.2s ease;
+  }
+  .glow-white:hover {
+    box-shadow: 0 8px 26px -6px rgba(255,255,255,0.55);
+    transform: translateY(-2px);
+  }
+  .glow-card {
+    transition: box-shadow 0.25s ease, transform 0.2s ease, border-color 0.2s ease;
+  }
+  .glow-card:hover {
+    box-shadow: 0 12px 32px -10px oklch(0.5 0.14 258 / 30%);
+    transform: translateY(-3px);
+    border-color: oklch(0.72 0.15 78 / 60%);
+  }
+}

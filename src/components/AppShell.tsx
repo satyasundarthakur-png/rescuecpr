@@ -13,8 +13,8 @@ function NavItem({ to, label, icon: Icon }: { to: string; label: string; icon: t
   return (
     <Link
       to={to}
-      className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50"
-      activeProps={{ className: 'bg-clinical-50 text-clinical-700 hover:bg-clinical-50' }}
+      className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-slate-600 transition-all hover:bg-clinical-50 hover:text-clinical-700 hover:shadow-[0_2px_10px_-4px_oklch(0.54_0.21_27_/_35%)]"
+      activeProps={{ className: 'bg-clinical-50 text-clinical-700 hover:bg-clinical-50 shadow-[0_2px_10px_-4px_oklch(0.54_0.21_27_/_35%)]' }}
       activeOptions={{ exact: to === '/dashboard' }}
     >
       <Icon size={17} />

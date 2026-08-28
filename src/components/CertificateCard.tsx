@@ -8,7 +8,7 @@ export default function CertificateCard({
   certificate, learnerName, courseTitle,
 }: { certificate: Certificate; learnerName: string; courseTitle: string }) {
   return (
-    <div className="relative w-full max-w-xl mx-auto rounded-2xl border border-clinical-200 bg-white shadow-md overflow-hidden">
+    <div className="glow-card relative w-full max-w-xl mx-auto rounded-2xl border border-clinical-200 bg-white shadow-md overflow-hidden">
       <div className="h-2.5 bg-gradient-to-r from-clinical-600 via-gold-500 to-brand-blue-600" />
       <div className="p-8">
         <div className="flex items-center justify-between">

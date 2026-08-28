@@ -31,10 +31,10 @@ export default function Landing() {
             Interactive training for CPR, BLS, ACLS, PALS, NALS and ATLS.
           </p>
           <div className="mt-8 flex items-center justify-center gap-3">
-            <Link to="/login" className="px-5 py-2.5 rounded-lg bg-white text-clinical-700 font-semibold shadow-sm hover:bg-clinical-50">
+            <Link to="/login" className="glow-white px-5 py-2.5 rounded-lg bg-white text-clinical-700 font-semibold shadow-sm hover:bg-clinical-50">
               Start Training
             </Link>
-            <a href="#courses" className="px-5 py-2.5 rounded-lg border border-white/40 text-white font-medium hover:bg-white/10">
+            <a href="#courses" className="px-5 py-2.5 rounded-lg border border-white/40 text-white font-medium transition-colors hover:bg-white/10 hover:border-white/70">
               Explore Courses
             </a>
           </div>
@@ -45,11 +45,11 @@ export default function Landing() {
         <h2 className="text-xl font-semibold text-slate-900 mb-6">Courses</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
           {courses.map((c, i) => (
-            <div key={c.id} className="group rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+            <div key={c.id} className="glow-card group rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm">
               <div className={`h-1.5 bg-gradient-to-r ${courseAccents[i % courseAccents.length]}`} />
               <div className="p-5">
                 <div className="text-xs font-semibold tracking-wide text-clinical-600">{c.key}</div>
-                <div className="mt-1 font-semibold text-slate-900">{c.subtitle}</div>
+                <div className="mt-1 font-semibold text-slate-900 group-hover:text-clinical-700 transition-colors">{c.subtitle}</div>
                 <p className="mt-2 text-sm text-slate-500 line-clamp-3">{c.description}</p>
               </div>
             </div>
