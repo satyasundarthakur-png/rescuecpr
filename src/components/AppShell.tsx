@@ -14,11 +14,14 @@ function NavItem({ to, label, icon: Icon, collapsed }: { to: string; label: stri
   return (
     <Link
       to={to}
-      className={`group flex items-center gap-3 rounded-lg text-sm font-medium text-slate-600 transition-all hover:bg-clinical-50 hover:text-clinical-700 ${collapsed ? 'justify-center px-2 py-2.5' : 'px-3 py-2'}`}
-      activeProps={{ className: 'text-clinical-700 [&_.nav-icon]:bg-clinical-600 [&_.nav-icon]:text-white [&_.nav-icon]:shadow-[0_2px_10px_-3px_oklch(0.54_0.21_27_/_60%)]' }}
+      className={`group relative flex items-center gap-3 rounded-lg text-sm font-medium text-slate-600 transition-all hover:bg-clinical-50 hover:text-clinical-700 ${collapsed ? 'justify-center px-2 py-2.5' : 'px-3 py-2'}`}
+      activeProps={{
+        className: `text-clinical-700 bg-clinical-50 font-semibold [&_.nav-icon]:bg-clinical-600 [&_.nav-icon]:text-white [&_.nav-icon]:shadow-[0_2px_10px_-3px_oklch(0.54_0.21_27_/_60%)] [&_.nav-accent]:opacity-100`,
+      }}
       activeOptions={{ exact: to === '/dashboard' }}
       title={collapsed ? label : undefined}
     >
+      <span className="nav-accent absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 rounded-r-full bg-clinical-600 opacity-0 transition-opacity" />
       <span className="nav-icon flex items-center justify-center h-7 w-7 rounded-md text-slate-500 transition-all group-hover:bg-clinical-100 group-hover:text-clinical-700">
         <Icon size={16} />
       </span>
