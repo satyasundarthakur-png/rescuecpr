@@ -10,6 +10,77 @@ export interface WalkthroughScene {
 
 const speechSupported = typeof window !== 'undefined' && 'speechSynthesis' in window
 
+// Prefer an Indian-English system voice when one is installed, since that's what the
+// person asked for; otherwise fall back gracefully. Voice *quality* itself is entirely
+// up to the browser/OS's built-in speech engine — this only controls which installed
+// voice gets used, it can't improve the engine itself.
+function pickVoice(voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | undefined {
+  const byLangIN = voices.find((v) => v.lang?.toLowerCase() === 'en-in')
+  if (byLangIN) return byLangIN
+  const byNameIN = voices.find((v) => /india|hindi|veena|rishi|neerja/i.test(v.name))
+  if (byNameIN) return byNameIN
+  return voices.find((v) => v.lang?.toLowerCase() === 'en-gb') ?? voices.find((v) => v.lang?.toLowerCase().startsWith('en'))
+}
+
+// Split a caption into short clauses so narration gets a natural breathing rhythm
+// (brief pause at each clause) instead of one flat, machine-paced sentence.
+function splitClauses(text: string): string[] {
+  return text.split(/(?<=[,;:])\s+|(?<=[.!?])\s+(?=\S)/).filter(Boolean)
+}
+
+// A very small procedural ambient bed — two detuned low tones through a filter with a
+// slow gain swell — generated entirely in the browser, not a recording of anything.
+class AmbientBed {
+  private ctx: AudioContext | null = null
+  private master: GainNode | null = null
+
+  start() {
+    if (this.ctx) return
+    const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
+    const ctx = new AudioCtx()
+    const master = ctx.createGain()
+    master.gain.value = 0.035
+    master.connect(ctx.destination)
+
+    const filter = ctx.createBiquadFilter()
+    filter.type = 'lowpass'
+    filter.frequency.value = 900
+    filter.connect(master)
+
+    const freqs = [110, 164.81] // A2 + E3 — a calm open fifth
+    freqs.forEach((f, i) => {
+      const osc = ctx.createOscillator()
+      osc.type = 'sine'
+      osc.frequency.value = f
+      osc.detune.value = i === 0 ? -4 : 4
+      osc.connect(filter)
+      osc.start()
+    })
+
+    // slow LFO swelling the master gain for a gentle "breathing" pad rather than a flat drone
+    const lfo = ctx.createOscillator()
+    lfo.frequency.value = 0.07
+    const lfoGain = ctx.createGain()
+    lfoGain.gain.value = 0.015
+    lfo.connect(lfoGain)
+    lfoGain.connect(master.gain)
+    lfo.start()
+
+    this.ctx = ctx
+    this.master = master
+  }
+
+  setMuted(muted: boolean) {
+    if (this.master) this.master.gain.value = muted ? 0 : 0.035
+  }
+
+  stop() {
+    this.ctx?.close()
+    this.ctx = null
+    this.master = null
+  }
+}
+
 export default function AnimatedWalkthrough({
   scenes, speed = 1, accent = '#DC2626', onSceneChange,
 }: { scenes: WalkthroughScene[]; speed?: number; accent?: string; onSceneChange?: (index: number) => void }) {
@@ -20,6 +91,8 @@ export default function AnimatedWalkthrough({
   const rafRef = useRef<number | null>(null)
   const startRef = useRef<number>(0)
   const pausedAtRef = useRef<number>(0)
+  const voicesRef = useRef<SpeechSynthesisVoice[]>([])
+  const bedRef = useRef<AmbientBed | null>(null)
 
   const scene = scenes[Math.min(index, scenes.length - 1)] ?? scenes[0]!
   const totalDuration = scenes.reduce((sum, s) => sum + s.durationSeconds, 0)
@@ -29,17 +102,44 @@ export default function AnimatedWalkthrough({
     onSceneChange?.(index)
   }, [index, onSceneChange])
 
+  // Load available system voices (async on some browsers).
+  useEffect(() => {
+    if (!speechSupported) return
+    function loadVoices() { voicesRef.current = window.speechSynthesis.getVoices() }
+    loadVoices()
+    window.speechSynthesis.addEventListener('voiceschanged', loadVoices)
+    return () => window.speechSynthesis.removeEventListener('voiceschanged', loadVoices)
+  }, [])
+
+  // Background ambient bed — starts once, follows play/pause and mute state.
+  useEffect(() => {
+    if (!bedRef.current) bedRef.current = new AmbientBed()
+    return () => bedRef.current?.stop()
+  }, [])
+  useEffect(() => {
+    if (!bedRef.current) return
+    if (playing) bedRef.current.start()
+    bedRef.current.setMuted(muted || !playing)
+  }, [playing, muted])
+
   // Narration — spoken via the browser's built-in speech engine, synced to the
-  // caption already on screen. No external audio files or generated voice assets.
+  // caption already on screen, using an Indian-English voice when available and
+  // clause-by-clause pacing for a more natural rhythm. No external audio files.
   useEffect(() => {
     if (!speechSupported) return
     window.speechSynthesis.cancel()
     if (!playing || muted) return
-    const utterance = new SpeechSynthesisUtterance(scene.caption)
-    utterance.rate = Math.min(2, Math.max(0.5, speed))
-    utterance.pitch = 1
-    utterance.volume = 1
-    window.speechSynthesis.speak(utterance)
+    const voice = pickVoice(voicesRef.current)
+    const clauses = splitClauses(scene.caption)
+    clauses.forEach((clause) => {
+      const utterance = new SpeechSynthesisUtterance(clause)
+      if (voice) utterance.voice = voice
+      utterance.lang = voice?.lang ?? 'en-IN'
+      utterance.rate = Math.min(1.15, Math.max(0.45, 0.92 * speed))
+      utterance.pitch = 1.02
+      utterance.volume = 1
+      window.speechSynthesis.speak(utterance)
+    })
     return () => window.speechSynthesis.cancel()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scene.id, playing, muted, speed])
@@ -99,7 +199,7 @@ export default function AnimatedWalkthrough({
           type="button"
           onClick={() => setMuted((m) => !m)}
           className="absolute top-2 right-2 text-white/80 hover:text-white bg-black/25 hover:bg-black/40 rounded-full p-1.5 z-10"
-          title={muted ? 'Unmute narration' : 'Mute narration'}
+          title={muted ? 'Unmute narration & music' : 'Mute narration & music'}
         >
           {muted ? <VolumeX size={14} /> : <Volume2 size={14} />}
         </button>
