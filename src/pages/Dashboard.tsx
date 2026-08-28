@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
-import { CheckCircle2, Target, BookOpenCheck, FlaskConical, Clock3, Flame } from 'lucide-react'
-import { modules } from '../data/seed'
+import { CheckCircle2, Target, BookOpenCheck, FlaskConical, Clock3, Flame, RotateCcw, CalendarCheck } from 'lucide-react'
+import { modules, learningObjectives } from '../data/seed'
 import { computeCompetency } from '../engines/competencyEngine'
 import { useAuth } from '../hooks/useAuth'
 import RadialProgress from '../components/RadialProgress'
@@ -15,6 +15,23 @@ const demoInputs = {
 const completionTrend = [38, 42, 45, 48, 51, 53, 54]
 const CONTINUE_PROGRESS = 68
 
+// Streak — demo: last 7 days of activity (true = practiced that day).
+const streakDays = [true, true, false, true, true, true, true]
+const CURRENT_STREAK = 4
+const DAILY_GOAL = 3
+const DAILY_DONE = 2
+
+// Spaced-repetition demo state — mastery + days since last practiced per objective.
+// Review interval scales with mastery: higher mastery = longer interval before it's "due".
+const demoMastery: Record<string, number> = { 'lo-CPR': 92, 'lo-BLS': 81, 'lo-ACLS': 67, 'lo-PALS': 74, 'lo-NALS': 58, 'lo-ATLS': 70 }
+const demoDaysSincePractice: Record<string, number> = { 'lo-CPR': 12, 'lo-BLS': 3, 'lo-ACLS': 9, 'lo-PALS': 2, 'lo-NALS': 15, 'lo-ATLS': 6 }
+function reviewIntervalDays(mastery: number) {
+  if (mastery >= 90) return 14
+  if (mastery >= 80) return 7
+  if (mastery >= 70) return 5
+  return 3
+}
+
 export default function Dashboard() {
   const { user } = useAuth()
   const competency = computeCompetency(demoInputs)
@@ -27,6 +44,11 @@ export default function Dashboard() {
     .sort((a, b) => b.value - a.value)
 
   const lowest = [...performance].sort((a, b) => a.value - b.value).slice(0, 2)
+
+  const dueForReview = learningObjectives
+    .map((lo) => ({ ...lo, mastery: demoMastery[lo.id] ?? 0, daysSince: demoDaysSincePractice[lo.id] ?? 0 }))
+    .filter((lo) => lo.daysSince >= reviewIntervalDays(lo.mastery))
+    .sort((a, b) => (b.daysSince - reviewIntervalDays(b.mastery)) - (a.daysSince - reviewIntervalDays(a.mastery)))
 
   return (
     <div className="p-8 max-w-6xl mx-auto space-y-8">
@@ -55,6 +77,33 @@ export default function Dashboard() {
             >
               Resume
             </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Streak + daily goal */}
+      <div className="grid sm:grid-cols-2 gap-4">
+        <div className="bg-white border border-slate-200 rounded-xl p-4 flex items-center gap-4">
+          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-orange-100 text-orange-500 shrink-0">
+            <Flame size={20} fill="currentColor" />
+          </span>
+          <div className="flex-1">
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-xl font-bold text-slate-900">{CURRENT_STREAK}</span>
+              <span className="text-xs text-slate-500">day streak</span>
+            </div>
+            <div className="flex items-center gap-1 mt-1.5">
+              {streakDays.map((active, i) => (
+                <span key={i} className={`h-1.5 w-4 rounded-full ${active ? 'bg-orange-400' : 'bg-slate-100'}`} />
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="bg-white border border-slate-200 rounded-xl p-4 flex items-center gap-4">
+          <RadialProgress value={(DAILY_DONE / DAILY_GOAL) * 100} size={44} strokeWidth={4} color="#0284C7" trackColor="#E0F2FE" label={`${DAILY_DONE}/${DAILY_GOAL}`} />
+          <div>
+            <div className="text-sm font-semibold text-slate-900">Daily goal</div>
+            <div className="text-xs text-slate-500">{DAILY_GOAL - DAILY_DONE > 0 ? `${DAILY_GOAL - DAILY_DONE} more drill${DAILY_GOAL - DAILY_DONE > 1 ? 's' : ''} to hit today's goal` : "Today's goal complete"}</div>
           </div>
         </div>
       </div>
@@ -97,6 +146,30 @@ export default function Dashboard() {
           <Sparkline data={completionTrend} showTrendIcon={false} />
         </div>
       </div>
+
+      {/* Spaced-repetition review queue */}
+      {dueForReview.length > 0 && (
+        <div className="bg-white border border-slate-200 rounded-xl p-5">
+          <div className="text-sm font-medium text-slate-500 mb-3 flex items-center gap-1.5">
+            <RotateCcw size={14} /> Due for review
+          </div>
+          <div className="flex flex-wrap gap-2.5">
+            {dueForReview.map((lo) => (
+              <div key={lo.id} className="flex items-center gap-2.5 border border-slate-200 rounded-lg pl-3 pr-2 py-2">
+                <div>
+                  <div className="text-sm font-medium text-slate-800">{lo.courseKey}</div>
+                  <div className="flex items-center gap-1 text-[11px] text-slate-400">
+                    <CalendarCheck size={11} /> {lo.daysSince} days since last practice
+                  </div>
+                </div>
+                <span className="text-xs font-semibold text-clinical-600 hover:text-clinical-700 cursor-pointer px-2 py-1 rounded-md hover:bg-clinical-50">
+                  Review
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Side-by-side equal-height cards */}
       <div className="grid md:grid-cols-2 gap-6 items-stretch">
