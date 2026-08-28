@@ -14,15 +14,15 @@ function NavItem({ to, label, icon: Icon, collapsed }: { to: string; label: stri
   return (
     <Link
       to={to}
-      className={`group relative flex items-center gap-3 rounded-lg text-sm font-medium text-slate-600 transition-all hover:bg-clinical-50 hover:text-clinical-700 ${collapsed ? 'justify-center px-2 py-2.5' : 'px-3 py-2'}`}
+      className={`group relative flex items-center gap-3 rounded-lg text-sm font-medium text-white/65 transition-all hover:bg-white/10 hover:text-white ${collapsed ? 'justify-center px-2 py-2.5' : 'px-3 py-2'}`}
       activeProps={{
-        className: `text-clinical-700 bg-clinical-50 font-semibold [&_.nav-icon]:bg-clinical-600 [&_.nav-icon]:text-white [&_.nav-icon]:shadow-[0_2px_10px_-3px_oklch(0.54_0.21_27_/_60%)] [&_.nav-accent]:opacity-100`,
+        className: `text-white bg-white/12 font-semibold [&_.nav-icon]:bg-clinical-500 [&_.nav-icon]:text-white [&_.nav-icon]:shadow-[0_2px_10px_-3px_rgba(0,0,0,0.4)] [&_.nav-accent]:opacity-100`,
       }}
       activeOptions={{ exact: to === '/dashboard' }}
       title={collapsed ? label : undefined}
     >
-      <span className="nav-accent absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 rounded-r-full bg-clinical-600 opacity-0 transition-opacity" />
-      <span className="nav-icon flex items-center justify-center h-7 w-7 rounded-md text-slate-500 transition-all group-hover:bg-clinical-100 group-hover:text-clinical-700">
+      <span className="nav-accent absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 rounded-r-full bg-gold-500 opacity-0 transition-opacity" />
+      <span className="nav-icon flex items-center justify-center h-7 w-7 rounded-md text-white/50 transition-all group-hover:bg-white/10 group-hover:text-white">
         <Icon size={16} />
       </span>
       {!collapsed && label}
@@ -37,15 +37,15 @@ export default function AppShell() {
 
   return (
     <div className="min-h-screen flex">
-      <aside className={`shrink-0 bg-white border-r border-slate-200 flex flex-col transition-all duration-200 ${collapsed ? 'w-[76px]' : 'w-60'}`}>
-        <div className="px-5 py-5 border-b border-slate-100 bg-gradient-to-r from-clinical-600 to-clinical-500">
+      <aside className={`shrink-0 bg-gradient-to-b from-clinical-700 to-clinical-800 flex flex-col transition-all duration-200 ${collapsed ? 'w-[76px]' : 'w-60'}`}>
+        <div className="px-5 py-5 border-b border-white/10">
           <div className={`flex items-center gap-2 ${collapsed ? 'justify-center' : ''}`}>
-            <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-white/20 text-white font-bold text-xs">R+</span>
+            <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-white/15 text-white font-bold text-xs">R+</span>
             {!collapsed && <div className="font-semibold text-white truncate">ResusPro Academy</div>}
           </div>
-          {!collapsed && <div className="text-xs text-clinical-50/80 mt-0.5">Simulation & Training</div>}
+          {!collapsed && <div className="text-xs text-white/50 mt-0.5">Simulation & Training</div>}
         </div>
-        <nav className="flex-1 px-2 py-4 space-y-1 bg-slate-50/60">
+        <nav className="flex-1 px-2 py-4 space-y-1">
           {navItems.map(({ to, label, icon }) => (
             <NavItem key={to} to={to} label={label} icon={icon} collapsed={collapsed} />
           ))}
@@ -53,19 +53,19 @@ export default function AppShell() {
             <NavItem to="/instructor" label="Instructor" icon={GraduationCap} collapsed={collapsed} />
           )}
         </nav>
-        <div className="px-3 py-3 border-t border-slate-100">
+        <div className="px-3 py-3 border-t border-white/10">
           <button
             onClick={() => setCollapsed((v) => !v)}
-            className={`flex items-center gap-2 text-xs text-slate-400 hover:text-clinical-600 rounded-md px-2 py-1.5 transition-colors ${collapsed ? 'justify-center w-full' : ''}`}
+            className={`flex items-center gap-2 text-xs text-white/45 hover:text-white rounded-md px-2 py-1.5 transition-colors ${collapsed ? 'justify-center w-full' : ''}`}
           >
             {collapsed ? <PanelLeftOpen size={15} /> : <><PanelLeftClose size={15} /> Collapse</>}
           </button>
         </div>
-        <div className={`px-3 py-4 border-t border-slate-100 ${collapsed ? 'flex flex-col items-center' : ''}`}>
-          {!collapsed && <div className="text-xs text-slate-500 mb-2 truncate">{user?.fullName} · {user?.role}</div>}
+        <div className={`px-3 py-4 border-t border-white/10 ${collapsed ? 'flex flex-col items-center' : ''}`}>
+          {!collapsed && <div className="text-xs text-white/45 mb-2 truncate">{user?.fullName} · {user?.role}</div>}
           <button
             onClick={async () => { await signOut(); navigate({ to: '/' }) }}
-            className="flex items-center gap-2 text-sm text-slate-500 hover:text-alert-500 transition-colors"
+            className="flex items-center gap-2 text-sm text-white/60 hover:text-white transition-colors"
             title={collapsed ? 'Sign out' : undefined}
           >
             <LogOut size={16} /> {!collapsed && 'Sign out'}

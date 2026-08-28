@@ -1,7 +1,10 @@
 import { Link } from '@tanstack/react-router'
+import { CheckCircle2, Target, BookOpenCheck, FlaskConical, Clock3, Flame } from 'lucide-react'
 import { modules } from '../data/seed'
 import { computeCompetency } from '../engines/competencyEngine'
 import { useAuth } from '../hooks/useAuth'
+import RadialProgress from '../components/RadialProgress'
+import Sparkline from '../components/Sparkline'
 
 // Demo metrics — in production these come from progress/mastery tables, not hardcoded.
 const demoInputs = {
@@ -9,65 +12,131 @@ const demoInputs = {
   teamCommunication: 68, timeCriticalResponse: 71, algorithmMastery: 91, simulationPerformance: 73,
 }
 
+const completionTrend = [38, 42, 45, 48, 51, 53, 54]
+const CONTINUE_PROGRESS = 68
+
 export default function Dashboard() {
   const { user } = useAuth()
   const competency = computeCompetency(demoInputs)
   const continueModule = modules[1]!
+  const minutesLeft = Math.max(1, Math.round(continueModule.estimatedMinutes * (1 - CONTINUE_PROGRESS / 100)))
+
+  const performance = Object.entries(competency)
+    .filter(([k]) => k !== 'overall')
+    .map(([k, v]) => ({ key: k, label: k.replace(/([A-Z])/g, ' $1').replace(/^./, (c) => c.toUpperCase()), value: v as number }))
+    .sort((a, b) => b.value - a.value)
+
+  const lowest = [...performance].sort((a, b) => a.value - b.value).slice(0, 2)
 
   return (
     <div className="p-8 max-w-6xl mx-auto space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold text-slate-900">Welcome back{user ? `, ${user.fullName}` : ''}</h1>
-        <p className="text-slate-500 text-sm mt-1">Here's where your training stands.</p>
-      </div>
-
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[
-          ['Overall completion', '54%'],
-          ['Competency score', `${competency.overall}%`],
-          ['Modules completed', '3 / 6'],
-          ['Simulations completed', '2'],
-        ].map(([label, value]) => (
-          <div key={label} className="bg-white border border-slate-200 rounded-xl p-4">
-            <div className="text-xs text-slate-500">{label}</div>
-            <div className="text-2xl font-semibold text-slate-900 mt-1">{value}</div>
-          </div>
-        ))}
-      </div>
-
-      <div className="bg-white border border-slate-200 rounded-xl p-5">
-        <div className="text-sm font-medium text-slate-500 mb-2">Continue Learning</div>
-        <div className="flex items-center justify-between">
+      {/* Hero banner — greeting + Continue Learning merged */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-clinical-700 via-clinical-600 to-brand-blue-700 p-7">
+        <div className="absolute inset-0 opacity-[0.12] [background-image:radial-gradient(circle_at_25%_25%,white_1px,transparent_1px)] [background-size:24px_24px]" />
+        <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-5">
           <div>
-            <div className="font-semibold text-slate-900">{continueModule.title}</div>
-            <div className="text-xs text-slate-500 mt-1">68% complete</div>
+            <div className="text-white/70 text-sm font-medium">Welcome back{user ? `, ${user.fullName}` : ''}</div>
+            <h1 className="text-2xl font-semibold text-white mt-0.5">Here's where your training stands</h1>
+            <div className="mt-4 inline-flex items-center gap-3 bg-white/10 border border-white/20 rounded-xl px-4 py-3 backdrop-blur-sm">
+              <div className="flex-1">
+                <div className="text-[11px] uppercase tracking-wide text-white/60 font-semibold">Continue Learning</div>
+                <div className="font-semibold text-white">{continueModule.title}</div>
+                <span className="inline-flex items-center gap-1 mt-1 text-[11px] font-medium text-gold-300">
+                  <Clock3 size={11} /> ~{minutesLeft} mins left
+                </span>
+              </div>
+            </div>
           </div>
-          <Link to="/module/$moduleId" params={{ moduleId: continueModule.id }} className="px-4 py-2 bg-clinical-600 text-white rounded-lg text-sm font-medium hover:bg-clinical-700">
-            Resume
-          </Link>
+          <div className="flex items-center gap-4 shrink-0">
+            <RadialProgress value={CONTINUE_PROGRESS} size={64} color="#ffffff" trackColor="rgba(255,255,255,0.2)" />
+            <Link
+              to="/module/$moduleId" params={{ moduleId: continueModule.id }}
+              className="glow-white px-5 py-2.5 rounded-lg bg-white text-clinical-700 text-sm font-semibold shadow-sm hover:bg-clinical-50"
+            >
+              Resume
+            </Link>
+          </div>
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
-        <div className="bg-white border border-slate-200 rounded-xl p-5">
-          <div className="text-sm font-medium text-slate-500 mb-3">Your Performance</div>
-          <ul className="space-y-2 text-sm">
-            {Object.entries(competency).filter(([k]) => k !== 'overall').map(([k, v]) => (
-              <li key={k} className="flex items-center justify-between">
-                <span className="capitalize text-slate-600">{k.replace(/([A-Z])/g, ' $1')}</span>
-                <span className="font-medium text-slate-900">{v}%</span>
-              </li>
-            ))}
-          </ul>
+      {/* KPI cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="rounded-xl border border-clinical-100 bg-clinical-50/60 p-4 flex items-center gap-3">
+          <RadialProgress value={54} size={48} strokeWidth={4.5} color="#DC2626" trackColor="#FEE2E2" />
+          <div>
+            <div className="text-xs text-slate-500">Overall completion</div>
+            <div className="text-lg font-semibold text-slate-900">54%</div>
+          </div>
         </div>
-        <div className="bg-white border border-slate-200 rounded-xl p-5">
-          <div className="text-sm font-medium text-slate-500 mb-3">Recommended Practice</div>
-          <p className="text-sm text-slate-600">
-            Team communication and time-critical response are your lowest-scoring dimensions.
-            Revisit the ACLS shockable-rhythm scenario to reinforce decision speed.
+        <div className="rounded-xl border border-emerald-100 bg-emerald-50/60 p-4 flex items-center gap-3">
+          <RadialProgress value={competency.overall} size={48} strokeWidth={4.5} color="#16A34A" trackColor="#DCFCE7" />
+          <div>
+            <div className="text-xs text-slate-500">Competency score</div>
+            <div className="text-lg font-semibold text-slate-900">{competency.overall}%</div>
+          </div>
+        </div>
+        <div className="rounded-xl border border-blue-100 bg-blue-50/60 p-4 flex items-center gap-3">
+          <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-blue-500 text-white shrink-0">
+            <BookOpenCheck size={18} />
+          </span>
+          <div>
+            <div className="text-xs text-slate-500">Modules completed</div>
+            <div className="text-lg font-semibold text-slate-900">3 / 6</div>
+          </div>
+        </div>
+        <div className="rounded-xl border border-gold-100 bg-gold-100/40 p-4 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-3">
+            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-gold-500 text-white shrink-0">
+              <FlaskConical size={18} />
+            </span>
+            <div>
+              <div className="text-xs text-slate-500">Simulations completed</div>
+              <div className="text-lg font-semibold text-slate-900">2</div>
+            </div>
+          </div>
+          <Sparkline data={completionTrend} showTrendIcon={false} />
+        </div>
+      </div>
+
+      {/* Side-by-side equal-height cards */}
+      <div className="grid md:grid-cols-2 gap-6 items-stretch">
+        <div className="bg-white border border-slate-200 rounded-xl p-5 flex flex-col">
+          <div className="text-sm font-medium text-slate-500 mb-4 flex items-center gap-1.5">
+            <Target size={14} /> Your Performance
+          </div>
+          <div className="space-y-3 flex-1">
+            {performance.map((p) => {
+              const color = p.value >= 80 ? '#16A34A' : p.value >= 65 ? '#D97706' : '#DC2626'
+              return (
+                <div key={p.key}>
+                  <div className="flex items-center justify-between text-xs mb-1">
+                    <span className="text-slate-600">{p.label}</span>
+                    <span className="font-semibold" style={{ color }}>{p.value}%</span>
+                  </div>
+                  <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
+                    <div className="h-full rounded-full transition-[width] duration-500" style={{ width: `${p.value}%`, backgroundColor: color }} />
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        <div className="bg-white border-2 border-amber-300 rounded-xl p-5 flex flex-col relative overflow-hidden">
+          <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-amber-400" />
+          <div className="text-sm font-medium text-amber-700 mb-2 flex items-center gap-1.5 pl-1">
+            <Flame size={14} /> Recommended Practice — Focus Area
+          </div>
+          <p className="text-sm text-slate-600 pl-1">
+            <strong className="text-slate-800">{lowest.map((l) => l.label).join(' and ')}</strong> are your lowest-scoring
+            dimensions. Revisit the ACLS shockable-rhythm scenario to reinforce decision speed.
           </p>
-          <Link to="/simulation/$scenarioId" params={{ scenarioId: "scn-acls-1" }} className="inline-block mt-3 text-sm font-medium text-clinical-600 hover:text-clinical-700">
-            Practice now →
+          <div className="flex-1" />
+          <Link
+            to="/simulation/$scenarioId" params={{ scenarioId: 'scn-acls-1' }}
+            className="inline-flex items-center gap-1.5 mt-4 text-sm font-semibold text-amber-700 hover:text-amber-800 pl-1"
+          >
+            <CheckCircle2 size={15} /> Practice now →
           </Link>
         </div>
       </div>
