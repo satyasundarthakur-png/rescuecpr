@@ -2,16 +2,20 @@ import { useMemo, useState } from 'react'
 import { useParams } from '@tanstack/react-router'
 import { LayoutList, Workflow } from 'lucide-react'
 import { algorithms } from '../data/seed'
-import { flowchartData } from '../data/flowchartData'
 import { advance, choose, currentNode, score, startAlgorithm, type AlgorithmMode, type AlgorithmRunState } from '../engines/algorithmEngine'
 import BLSFlowchart from '../components/BLSFlowchart'
 import ACLSFlowchart from '../components/ACLSFlowchart'
-import AlgorithmFlowchart from '../components/AlgorithmFlowchart'
+import PALSFlowchart from '../components/PALSFlowchart'
+import NALSFlowchart from '../components/NALSFlowchart'
+import ATLSFlowchart from '../components/ATLSFlowchart'
+import CPRFlowchart from '../components/CPRFlowchart'
+
+const ILLUSTRATED_COURSES = new Set(['BLS', 'ACLS', 'PALS', 'NALS', 'ATLS', 'CPR'])
 
 export default function AlgorithmPage() {
   const { algorithmId } = useParams({ strict: false })
   const algorithm = algorithms.find((a) => a.id === algorithmId)
-  const hasFlowchart = algorithm ? algorithm.courseKey === 'BLS' || algorithm.courseKey === 'ACLS' || Boolean(flowchartData[algorithm.courseKey]) : false
+  const hasFlowchart = algorithm ? ILLUSTRATED_COURSES.has(algorithm.courseKey) : false
   const [mode, setMode] = useState<AlgorithmMode>('learn')
   const [view, setView] = useState<'practice' | 'flowchart'>(hasFlowchart ? 'flowchart' : 'practice')
   const [state, setState] = useState<AlgorithmRunState | null>(algorithm ? startAlgorithm(algorithm) : null)
@@ -78,8 +82,14 @@ export default function AlgorithmPage() {
         <BLSFlowchart />
       ) : view === 'flowchart' && algorithm.courseKey === 'ACLS' ? (
         <ACLSFlowchart />
-      ) : view === 'flowchart' && flowchartData[algorithm.courseKey] ? (
-        <AlgorithmFlowchart data={flowchartData[algorithm.courseKey]!} />
+      ) : view === 'flowchart' && algorithm.courseKey === 'PALS' ? (
+        <PALSFlowchart />
+      ) : view === 'flowchart' && algorithm.courseKey === 'NALS' ? (
+        <NALSFlowchart />
+      ) : view === 'flowchart' && algorithm.courseKey === 'ATLS' ? (
+        <ATLSFlowchart />
+      ) : view === 'flowchart' && algorithm.courseKey === 'CPR' ? (
+        <CPRFlowchart />
       ) : (
       <div className="grid md:grid-cols-[1fr_1.4fr] gap-6">
         <div className="bg-white border border-slate-200 rounded-xl p-4">

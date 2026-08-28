@@ -1,91 +1,17 @@
-import { useState } from 'react'
 import {
-  Stethoscope, Zap, Volume2, Wind, ChevronDown, GraduationCap, Syringe, Snowflake, Droplet,
-  FlaskConical, Battery, Thermometer, Activity, Gauge, Droplets, ChevronRight,
+  Stethoscope, Zap, Volume2, Wind, Syringe, Snowflake, Droplet,
+  FlaskConical, Battery, Thermometer, Activity, Gauge, Droplets,
 } from 'lucide-react'
 import { PulseCheckIcon, TorsoAEDPadsIcon } from './bls-icons'
 import { CompressionTechniqueIcon, EndotrachealTubeIcon, TensionPneumoIcon, TamponadeIcon, ThrombosisIcon } from './acls-icons'
-import EcgTrace, { type EcgPattern } from './EcgTrace'
+import EcgTrace from './EcgTrace'
 import BeatMetronome from './BeatMetronome'
+import { Arrow, FlowCard, RhythmCard } from './flowchart-ui'
 
 // Visual training reference — paraphrased summary of publicly reported AHA/ILCOR adult
 // ACLS guideline highlights. Original layout, wording, and iconography — not official
 // artwork or verbatim text. Not a substitute for an accredited certification course or
 // your institution's protocol. Same "review" posture as the interactive algorithm data.
-
-function Arrow() {
-  return (
-    <div className="flex justify-center py-1.5">
-      <ChevronDown size={20} className="text-slate-300" />
-    </div>
-  )
-}
-
-function FlowCard({
-  icon, eyebrow, title, bg, border, text, iconBg, children, teachingNote,
-}: {
-  icon: React.ReactNode
-  eyebrow: string
-  title: string
-  bg: string
-  border: string
-  text: string
-  iconBg: string
-  children: React.ReactNode
-  teachingNote?: string
-}) {
-  const [showTeaching, setShowTeaching] = useState(false)
-  return (
-    <div className="rounded-2xl border-2 p-5" style={{ backgroundColor: bg, borderColor: border }}>
-      <div className="flex items-center gap-2 mb-2">
-        <span className="flex h-7 w-7 items-center justify-center rounded-lg text-white shrink-0" style={{ backgroundColor: iconBg }}>
-          {icon}
-        </span>
-        <span className="text-[11px] font-bold uppercase tracking-wide" style={{ color: text }}>{eyebrow}</span>
-      </div>
-      <div className="font-semibold text-slate-900 mb-2">{title}</div>
-      <div className="text-sm text-slate-700 space-y-1.5">{children}</div>
-      {teachingNote && (
-        <div className="mt-3">
-          <button type="button" onClick={() => setShowTeaching((v) => !v)}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold hover:underline" style={{ color: text }}>
-            <GraduationCap size={13} /> {showTeaching ? 'Hide teaching note' : 'Why this matters'}
-          </button>
-          {showTeaching && <div className="mt-2 text-xs text-slate-600 bg-white/60 rounded-lg p-3 leading-relaxed">{teachingNote}</div>}
-        </div>
-      )}
-    </div>
-  )
-}
-
-function RhythmCard({
-  theme, label, pattern, criteria, action,
-}: { theme: 'green' | 'orange'; label: string; pattern: EcgPattern; criteria: string; action: string }) {
-  const [expanded, setExpanded] = useState(false)
-  const colors = theme === 'green'
-    ? { bg: '#DCFCE7', border: '#16A34A', text: '#15803D' }
-    : { bg: '#FFEDD5', border: '#EA580C', text: '#C2410C' }
-  return (
-    <div className="rounded-xl border-2 p-3.5" style={{ backgroundColor: colors.bg, borderColor: colors.border }}>
-      <div className="flex items-center justify-between mb-1">
-        <div className="text-xs font-bold uppercase tracking-wide" style={{ color: colors.text }}>{label}</div>
-        <button
-          type="button"
-          onClick={() => setExpanded((v) => !v)}
-          className="text-[10px] font-semibold inline-flex items-center gap-0.5 hover:underline"
-          style={{ color: colors.text }}
-        >
-          {expanded ? 'Hide criteria' : 'Rhythm criteria'} <ChevronRight size={11} className={`transition-transform ${expanded ? 'rotate-90' : ''}`} />
-        </button>
-      </div>
-      <EcgTrace pattern={pattern} color={colors.border} className="w-full h-8 my-1.5" />
-      <p className="text-sm text-slate-700">{action}</p>
-      {expanded && (
-        <div className="mt-2 text-xs text-slate-600 bg-white/70 rounded-lg p-2.5 leading-relaxed">{criteria}</div>
-      )}
-    </div>
-  )
-}
 
 const HT_CAUSES: { label: string; icon: React.ReactNode }[] = [
   { label: 'Hypovolemia', icon: <Droplet size={20} /> },

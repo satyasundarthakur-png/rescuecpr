@@ -1,5 +1,4 @@
-import { ShieldAlert, PhoneCall, HeartPulse, Zap, Wind, Syringe, ChevronDown, GraduationCap } from 'lucide-react'
-import { useState, type ReactNode } from 'react'
+import { ShieldAlert, PhoneCall, HeartPulse, Zap, Wind, Syringe } from 'lucide-react'
 import {
   SceneScanIcon, SpeechBubbleIcon, PulseCheckIcon, PhoneCallIcon, AEDCabinetIcon,
   CompressionIcon, TorsoAEDPadsIcon,
@@ -7,6 +6,7 @@ import {
 } from './bls-icons'
 import EcgTrace from './EcgTrace'
 import BeatMetronome from './BeatMetronome'
+import { Arrow, FlowCard } from './flowchart-ui'
 
 // Visual training reference, paraphrased at a high level from publicly reported 2025
 // AHA/ILCOR adult BLS guideline highlights. Original layout, wording, and iconography —
@@ -14,59 +14,6 @@ import BeatMetronome from './BeatMetronome'
 // institution's current protocol and an accredited certification course; this is a
 // training aid only. See the numbered node list below for the equivalent interactive
 // walkthrough, which carries the same "review" / not-for-clinical-use status.
-
-function Arrow() {
-  return (
-    <div className="flex justify-center py-1.5">
-      <ChevronDown size={20} className="text-slate-300" />
-    </div>
-  )
-}
-
-function FlowCard({
-  icon, eyebrow, title, bg, border, text, iconBg, children, teachingNote,
-}: {
-  icon: ReactNode
-  eyebrow: string
-  title: string
-  bg: string
-  border: string
-  text: string
-  iconBg: string
-  children: ReactNode
-  teachingNote?: string
-}) {
-  const [showTeaching, setShowTeaching] = useState(false)
-  return (
-    <div className="rounded-2xl border-2 p-5" style={{ backgroundColor: bg, borderColor: border }}>
-      <div className="flex items-center gap-2 mb-2">
-        <span className="flex h-7 w-7 items-center justify-center rounded-lg text-white shrink-0" style={{ backgroundColor: iconBg }}>
-          {icon}
-        </span>
-        <span className="text-[11px] font-bold uppercase tracking-wide" style={{ color: text }}>{eyebrow}</span>
-      </div>
-      <div className="font-semibold text-slate-900 mb-2">{title}</div>
-      <div className="text-sm text-slate-700 space-y-1.5">{children}</div>
-      {teachingNote && (
-        <div className="mt-3">
-          <button
-            type="button"
-            onClick={() => setShowTeaching((v) => !v)}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold hover:underline"
-            style={{ color: text }}
-          >
-            <GraduationCap size={13} /> {showTeaching ? 'Hide teaching note' : 'Why this matters'}
-          </button>
-          {showTeaching && (
-            <div className="mt-2 text-xs text-slate-600 bg-white/60 rounded-lg p-3 leading-relaxed">
-              {teachingNote}
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  )
-}
 
 export default function BLSFlowchart() {
   return (
