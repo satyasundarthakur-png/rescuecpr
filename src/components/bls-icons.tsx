@@ -95,25 +95,6 @@ export function TorsoAEDPadsIcon({ className = '', style }: { className?: string
   )
 }
 
-export function EcgShockableIcon({ className = '', style }: { className?: string; style?: CSSProperties }) {
-  return (
-    <svg viewBox="0 0 160 50" className={className} style={style} fill="none">
-      <polyline
-        points="0,25 8,10 16,38 24,14 32,30 40,6 48,40 56,18 64,32 72,10 80,26 88,12 96,36 104,20 112,30 120,8 128,34 136,16 144,26 160,22"
-        stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-    </svg>
-  )
-}
-
-export function EcgNonShockableIcon({ className = '', style }: { className?: string; style?: CSSProperties }) {
-  return (
-    <svg viewBox="0 0 160 50" className={className} style={style} fill="none">
-      <polyline points="0,26 40,26 44,20 48,30 52,26 90,26 94,22 98,29 102,26 160,26"
-                stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-    </svg>
-  )
-}
-
 export function BackBlowsIcon({ className = '', style }: { className?: string; style?: CSSProperties }) {
   return (
     <svg viewBox="0 0 120 100" className={className} style={style} fill="none">

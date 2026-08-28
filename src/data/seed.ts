@@ -248,3 +248,10 @@ export const learningObjectives: LearningObjective[] = courses.map((c) => ({
   courseKey: c.key,
   label: `Demonstrates core ${c.key} decision sequence`,
 }))
+
+// Demo mastery-by-objective values shared by the Dashboard and Progress pages —
+// production reads from the learner_mastery table. Kept in one place so the two
+// pages can't silently drift out of sync with each other.
+export const demoMasteryByObjective: Record<string, number> = {
+  'lo-CPR': 92, 'lo-BLS': 81, 'lo-ACLS': 67, 'lo-PALS': 74, 'lo-NALS': 58, 'lo-ATLS': 70,
+}

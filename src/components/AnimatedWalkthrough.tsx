@@ -82,8 +82,8 @@ class AmbientBed {
 }
 
 export default function AnimatedWalkthrough({
-  scenes, speed = 1, accent = '#DC2626', onSceneChange,
-}: { scenes: WalkthroughScene[]; speed?: number; accent?: string; onSceneChange?: (index: number) => void }) {
+  scenes, speed = 1, onSceneChange,
+}: { scenes: WalkthroughScene[]; speed?: number; onSceneChange?: (index: number) => void }) {
   const [index, setIndex] = useState(0)
   const [playing, setPlaying] = useState(true)
   const [sceneProgress, setSceneProgress] = useState(0) // 0..1 within current scene
@@ -91,6 +91,7 @@ export default function AnimatedWalkthrough({
   const rafRef = useRef<number | null>(null)
   const startRef = useRef<number>(0)
   const pausedAtRef = useRef<number>(0)
+  const elapsedMsRef = useRef<number>(0)
   const voicesRef = useRef<SpeechSynthesisVoice[]>([])
   const bedRef = useRef<AmbientBed | null>(null)
 
@@ -150,7 +151,9 @@ export default function AnimatedWalkthrough({
     if (!playing) return
     startRef.current = performance.now() - pausedAtRef.current
     function tick(now: number) {
-      const elapsed = (now - startRef.current) / 1000
+      const elapsedMs = now - startRef.current
+      elapsedMsRef.current = elapsedMs
+      const elapsed = elapsedMs / 1000
       const durAdj = scene.durationSeconds / speed
       const p = Math.min(1, elapsed / durAdj)
       setSceneProgress(p)
@@ -177,10 +180,15 @@ export default function AnimatedWalkthrough({
   }
 
   function togglePlay() {
-    if (!playing && sceneProgress >= 1) {
-      goTo(0)
+    if (!playing) {
+      if (sceneProgress >= 1) goTo(0)
+      setPlaying(true)
+    } else {
+      // Capture exactly how far into this scene we are so resuming continues
+      // from here instead of restarting the scene's timer from zero.
+      pausedAtRef.current = elapsedMsRef.current
+      setPlaying(false)
     }
-    setPlaying((p) => !p)
   }
 
   function restart() {

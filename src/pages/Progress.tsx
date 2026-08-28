@@ -1,13 +1,8 @@
 import { useMemo, useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { Search, List, Radar as RadarIcon, ChevronDown, Zap, BookOpen } from 'lucide-react'
-import { learningObjectives, modules } from '../data/seed'
+import { learningObjectives, modules, demoMasteryByObjective } from '../data/seed'
 import RadarChart from '../components/RadarChart'
-
-// Demo mastery values — production reads from the learner_mastery table.
-const demoMastery: Record<string, number> = {
-  'lo-CPR': 92, 'lo-BLS': 81, 'lo-ACLS': 67, 'lo-PALS': 74, 'lo-NALS': 58, 'lo-ATLS': 70,
-}
 
 const GROUPS: { title: string; courses: string[] }[] = [
   { title: 'Basic Resuscitation', courses: ['CPR', 'BLS'] },
@@ -40,7 +35,7 @@ export default function Progress() {
 
   const enriched = useMemo(() => learningObjectives.map((lo) => ({
     ...lo,
-    value: demoMastery[lo.id] ?? 0,
+    value: demoMasteryByObjective[lo.id] ?? 0,
     module: modules.find((m) => m.courseId === `course-${lo.courseKey.toLowerCase()}`),
   })), [])
 

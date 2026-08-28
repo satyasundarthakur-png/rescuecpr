@@ -120,16 +120,20 @@ export default function Certificates() {
     return { blob: pdf.output('blob'), filename }
   }
 
+  function downloadBlob(blob: Blob, filename: string) {
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = filename
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   async function handleDownloadPdf() {
     if (!passed) return
     const result = await generatePdfBlob()
     if (!result) return
-    const url = URL.createObjectURL(result.blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = result.filename
-    a.click()
-    URL.revokeObjectURL(url)
+    downloadBlob(result.blob, result.filename)
   }
 
   async function handleShare() {
@@ -146,12 +150,7 @@ export default function Certificates() {
       }
     }
     // Fallback for browsers without file-sharing support: just download it.
-    const url = URL.createObjectURL(result.blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = result.filename
-    a.click()
-    URL.revokeObjectURL(url)
+    downloadBlob(result.blob, result.filename)
   }
 
   async function handleEmail() {

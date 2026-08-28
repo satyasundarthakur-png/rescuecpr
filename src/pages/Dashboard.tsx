@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { CheckCircle2, Target, BookOpenCheck, FlaskConical, Clock3, Flame, RotateCcw, CalendarCheck } from 'lucide-react'
-import { modules, learningObjectives } from '../data/seed'
+import { modules, learningObjectives, demoMasteryByObjective } from '../data/seed'
 import { computeCompetency } from '../engines/competencyEngine'
 import { useAuth } from '../hooks/useAuth'
 import RadialProgress from '../components/RadialProgress'
@@ -23,7 +23,6 @@ const DAILY_DONE = 2
 
 // Spaced-repetition demo state — mastery + days since last practiced per objective.
 // Review interval scales with mastery: higher mastery = longer interval before it's "due".
-const demoMastery: Record<string, number> = { 'lo-CPR': 92, 'lo-BLS': 81, 'lo-ACLS': 67, 'lo-PALS': 74, 'lo-NALS': 58, 'lo-ATLS': 70 }
 const demoDaysSincePractice: Record<string, number> = { 'lo-CPR': 12, 'lo-BLS': 3, 'lo-ACLS': 9, 'lo-PALS': 2, 'lo-NALS': 15, 'lo-ATLS': 6 }
 function reviewIntervalDays(mastery: number) {
   if (mastery >= 90) return 14
@@ -46,7 +45,7 @@ export default function Dashboard() {
   const lowest = [...performance].sort((a, b) => a.value - b.value).slice(0, 2)
 
   const dueForReview = learningObjectives
-    .map((lo) => ({ ...lo, mastery: demoMastery[lo.id] ?? 0, daysSince: demoDaysSincePractice[lo.id] ?? 0 }))
+    .map((lo) => ({ ...lo, mastery: demoMasteryByObjective[lo.id] ?? 0, daysSince: demoDaysSincePractice[lo.id] ?? 0 }))
     .filter((lo) => lo.daysSince >= reviewIntervalDays(lo.mastery))
     .sort((a, b) => (b.daysSince - reviewIntervalDays(b.mastery)) - (a.daysSince - reviewIntervalDays(a.mastery)))
 
