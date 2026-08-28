@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { Play, Pause, RotateCcw, SkipBack, SkipForward } from 'lucide-react'
+import { Play, Pause, RotateCcw, SkipBack, SkipForward, Volume2, VolumeX } from 'lucide-react'
 
 export interface WalkthroughScene {
   id: string
@@ -8,12 +8,15 @@ export interface WalkthroughScene {
   render: () => ReactNode
 }
 
+const speechSupported = typeof window !== 'undefined' && 'speechSynthesis' in window
+
 export default function AnimatedWalkthrough({
   scenes, speed = 1, accent = '#DC2626', onSceneChange,
 }: { scenes: WalkthroughScene[]; speed?: number; accent?: string; onSceneChange?: (index: number) => void }) {
   const [index, setIndex] = useState(0)
   const [playing, setPlaying] = useState(true)
   const [sceneProgress, setSceneProgress] = useState(0) // 0..1 within current scene
+  const [muted, setMuted] = useState(false)
   const rafRef = useRef<number | null>(null)
   const startRef = useRef<number>(0)
   const pausedAtRef = useRef<number>(0)
@@ -25,6 +28,23 @@ export default function AnimatedWalkthrough({
   useEffect(() => {
     onSceneChange?.(index)
   }, [index, onSceneChange])
+
+  // Narration — spoken via the browser's built-in speech engine, synced to the
+  // caption already on screen. No external audio files or generated voice assets.
+  useEffect(() => {
+    if (!speechSupported) return
+    window.speechSynthesis.cancel()
+    if (!playing || muted) return
+    const utterance = new SpeechSynthesisUtterance(scene.caption)
+    utterance.rate = Math.min(2, Math.max(0.5, speed))
+    utterance.pitch = 1
+    utterance.volume = 1
+    window.speechSynthesis.speak(utterance)
+    return () => window.speechSynthesis.cancel()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scene.id, playing, muted, speed])
+
+  useEffect(() => () => { if (speechSupported) window.speechSynthesis.cancel() }, [])
 
   useEffect(() => {
     if (!playing) return
@@ -73,6 +93,17 @@ export default function AnimatedWalkthrough({
   return (
     <div className="relative w-full h-full flex flex-col items-center justify-center overflow-hidden">
       <div className="absolute inset-0 opacity-[0.12] [background-image:radial-gradient(circle_at_30%_30%,white_1px,transparent_1px)] [background-size:26px_26px]" />
+
+      {speechSupported && (
+        <button
+          type="button"
+          onClick={() => setMuted((m) => !m)}
+          className="absolute top-2 right-2 text-white/80 hover:text-white bg-black/25 hover:bg-black/40 rounded-full p-1.5 z-10"
+          title={muted ? 'Unmute narration' : 'Mute narration'}
+        >
+          {muted ? <VolumeX size={14} /> : <Volume2 size={14} />}
+        </button>
+      )}
 
       <div key={scene.id} className="relative flex flex-col items-center gap-4 text-white px-6" style={{ animation: 'fade-in 0.35s ease' }}>
         <div className="text-white [&_svg]:drop-shadow-sm">{scene.render()}</div>
