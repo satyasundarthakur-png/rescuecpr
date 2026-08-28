@@ -3,6 +3,7 @@ import { Link, Outlet, useNavigate } from '@tanstack/react-router'
 import { LayoutDashboard, BookOpen, LineChart, GraduationCap, LogOut, Award, PanelLeftClose, PanelLeftOpen, Search } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import CommandPalette from './CommandPalette'
+import TopBar from './TopBar'
 
 const navItems = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -17,7 +18,7 @@ function NavItem({ to, label, icon: Icon, collapsed }: { to: string; label: stri
       to={to}
       className={`group relative flex items-center gap-3 rounded-lg text-sm font-medium text-white/65 transition-all hover:bg-white/10 hover:text-white ${collapsed ? 'justify-center px-2 py-2.5' : 'px-3 py-2'}`}
       activeProps={{
-        className: `text-white bg-white/12 font-semibold [&_.nav-icon]:bg-clinical-500 [&_.nav-icon]:text-white [&_.nav-icon]:shadow-[0_2px_10px_-3px_rgba(0,0,0,0.4)] [&_.nav-accent]:opacity-100`,
+        className: `bg-white text-clinical-700 font-semibold shadow-sm [&_.nav-icon]:bg-clinical-600 [&_.nav-icon]:text-white [&_.nav-accent]:opacity-100`,
       }}
       activeOptions={{ exact: to === '/dashboard' }}
       title={collapsed ? label : undefined}
@@ -98,6 +99,7 @@ export default function AppShell() {
       </aside>
       <main className="flex-1 min-w-0 flex flex-col">
         <div className="h-1 shrink-0 bg-gradient-to-r from-clinical-500 via-gold-500 to-brand-blue-600" />
+        <TopBar onSearchClick={() => setPaletteOpen(true)} />
         <div className="flex-1 min-w-0 overflow-auto">
           <Outlet />
         </div>

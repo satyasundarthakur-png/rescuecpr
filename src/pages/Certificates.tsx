@@ -1,11 +1,20 @@
-import { useRef, useState } from 'react'
-import { Download, Printer, Save, RefreshCw, Upload, X, Pencil, Eye } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { Download, Printer, Save, RefreshCw, Upload, X, Pencil, Eye, Share2, Mail, BookmarkPlus, LayoutTemplate } from 'lucide-react'
 import { courses } from '../data/seed'
 import { useAuth } from '../hooks/useAuth'
 import CertificateCard, { type CertificateSignature } from '../components/CertificateCard'
 import type { Certificate } from '../types/domain'
 
 const PASSING_SCORE = 80
+
+interface CertTemplate {
+  name: string
+  courseId: string
+  primarySig: CertificateSignature
+  secondaryEnabled: boolean
+  secondarySig: CertificateSignature
+  sealEnabled: boolean
+}
 
 function todayInput() {
   return new Date().toISOString().slice(0, 10)
@@ -78,6 +87,16 @@ export default function Certificates() {
   const [secondarySig, setSecondarySig] = useState<CertificateSignature>({ name: '', title: 'Medical Director' })
   const [sealEnabled, setSealEnabled] = useState(false)
   const [sealDataUrl, setSealDataUrl] = useState<string | undefined>(undefined)
+  const [templates, setTemplates] = useState<CertTemplate[]>([])
+  const [templateMenuOpen, setTemplateMenuOpen] = useState(false)
+
+  useEffect(() => {
+    try {
+      setTemplates(JSON.parse(localStorage.getItem('rpa-cert-templates') ?? '[]'))
+    } catch {
+      setTemplates([])
+    }
+  }, [])
 
   const course = courses.find((c) => c.id === courseId)!
   const certificate: Certificate = {
@@ -90,14 +109,79 @@ export default function Certificates() {
   }
   const passed = scorePercent >= PASSING_SCORE
 
-  async function handleDownloadPdf() {
-    if (!printRef.current || !passed) return
+  async function generatePdfBlob(): Promise<{ blob: Blob; filename: string } | null> {
+    if (!printRef.current) return null
     const [{ default: html2canvas }, { jsPDF }] = await Promise.all([import('html2canvas'), import('jspdf')])
     const canvas = await html2canvas(printRef.current, { backgroundColor: '#ffffff', scale: 2 })
     const imgData = canvas.toDataURL('image/png')
     const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [canvas.width, canvas.height] })
     pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height)
-    pdf.save(`${learnerName.replace(/\s+/g, '-').toLowerCase()}-${course.key.toLowerCase()}-certificate.pdf`)
+    const filename = `${learnerName.replace(/\s+/g, '-').toLowerCase()}-${course.key.toLowerCase()}-certificate.pdf`
+    return { blob: pdf.output('blob'), filename }
+  }
+
+  async function handleDownloadPdf() {
+    if (!passed) return
+    const result = await generatePdfBlob()
+    if (!result) return
+    const url = URL.createObjectURL(result.blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = result.filename
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  async function handleShare() {
+    if (!passed) return
+    const result = await generatePdfBlob()
+    if (!result) return
+    const file = new File([result.blob], result.filename, { type: 'application/pdf' })
+    if (navigator.canShare?.({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file], title: `${course.subtitle} certificate`, text: `${learnerName}'s ${course.subtitle} training completion certificate` })
+        return
+      } catch {
+        // user cancelled or share failed — fall through to download
+      }
+    }
+    // Fallback for browsers without file-sharing support: just download it.
+    const url = URL.createObjectURL(result.blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = result.filename
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  async function handleEmail() {
+    if (!passed) return
+    await handleDownloadPdf()
+    const subject = encodeURIComponent(`${learnerName} — ${course.subtitle} completion certificate`)
+    const body = encodeURIComponent(
+      `Hi,\n\nAttached is ${learnerName}'s training completion certificate for ${course.subtitle} (Certificate ID: ${certificateNumber}).\n\n` +
+      `The PDF has just been downloaded to your device — please attach it here before sending, since browsers can't attach files to an email automatically.\n\n— ResusPro Academy`
+    )
+    window.location.href = `mailto:?subject=${subject}&body=${body}`
+  }
+
+  function handleSaveTemplate() {
+    const name = window.prompt('Name this template (e.g. "BLS — standard sign-off"):', `${course.key} template`)
+    if (!name) return
+    const templates = JSON.parse(localStorage.getItem('rpa-cert-templates') ?? '[]') as CertTemplate[]
+    const next = [...templates.filter((t) => t.name !== name), {
+      name, courseId, primarySig, secondaryEnabled, secondarySig, sealEnabled,
+    }]
+    localStorage.setItem('rpa-cert-templates', JSON.stringify(next))
+    setTemplates(next)
+  }
+
+  function applyTemplate(t: CertTemplate) {
+    setCourseId(t.courseId)
+    setPrimarySig(t.primarySig)
+    setSecondaryEnabled(t.secondaryEnabled)
+    setSecondarySig(t.secondarySig)
+    setSealEnabled(t.sealEnabled)
   }
 
   return (
@@ -281,7 +365,7 @@ export default function Certificates() {
         </div>
       )}
 
-      <div className="flex items-center gap-2 no-print">
+      <div className="flex items-center gap-2 no-print flex-wrap">
         <button
           onClick={handleDownloadPdf}
           disabled={!passed}
@@ -296,6 +380,53 @@ export default function Certificates() {
         >
           <Printer size={14} /> Print Certificate
         </button>
+        <button
+          onClick={handleShare}
+          disabled={!passed}
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-slate-300 text-sm font-medium text-slate-600 hover:border-clinical-400 hover:text-clinical-700 disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          <Share2 size={14} /> Share
+        </button>
+        <button
+          onClick={handleEmail}
+          disabled={!passed}
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-slate-300 text-sm font-medium text-slate-600 hover:border-clinical-400 hover:text-clinical-700 disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          <Mail size={14} /> Email Certificate
+        </button>
+        {canEdit && (
+          <>
+            <button
+              onClick={handleSaveTemplate}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-slate-300 text-sm font-medium text-slate-600 hover:border-clinical-400 hover:text-clinical-700"
+            >
+              <BookmarkPlus size={14} /> Save as Template
+            </button>
+            {templates.length > 0 && (
+              <div className="relative">
+                <button
+                  onClick={() => setTemplateMenuOpen((v) => !v)}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-slate-300 text-sm font-medium text-slate-600 hover:border-clinical-400 hover:text-clinical-700"
+                >
+                  <LayoutTemplate size={14} /> Load Template
+                </button>
+                {templateMenuOpen && (
+                  <div className="absolute left-0 top-full mt-2 w-56 rounded-xl border border-slate-200 bg-white shadow-lg overflow-hidden z-20">
+                    {templates.map((t) => (
+                      <button
+                        key={t.name}
+                        onClick={() => { applyTemplate(t); setTemplateMenuOpen(false) }}
+                        className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-clinical-50 hover:text-clinical-700"
+                      >
+                        {t.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </>
+        )}
       </div>
 
       <div className="space-y-6">
