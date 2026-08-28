@@ -1,18 +1,23 @@
 import { useState } from 'react'
-import { Heart, Play } from 'lucide-react'
+import { Heart } from 'lucide-react'
 import type { Video } from '../types/domain'
+import AnimatedWalkthrough from './AnimatedWalkthrough'
+import { walkthroughScenes } from '../data/walkthroughScenes'
 
 const SPEEDS = [0.75, 1, 1.25, 1.5, 2]
 
 export default function VideoPlayer({ video }: { video: Video }) {
   const [speed, setSpeed] = useState(1)
   const [activeChapter, setActiveChapter] = useState(0)
+  const scenes = walkthroughScenes[video.courseKey]
 
   return (
     <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
       <div className="relative aspect-video bg-gradient-to-br from-clinical-700 via-clinical-600 to-brand-blue-700 flex items-center justify-center overflow-hidden">
         {video.sourceUrl ? (
           <video src={video.sourceUrl} controls className="w-full h-full" />
+        ) : scenes ? (
+          <AnimatedWalkthrough scenes={scenes} speed={speed} />
         ) : (
           <>
             <div className="absolute inset-0 opacity-[0.15] [background-image:radial-gradient(circle_at_30%_30%,white_1px,transparent_1px)] [background-size:26px_26px]" />
@@ -25,12 +30,6 @@ export default function VideoPlayer({ video }: { video: Video }) {
               </span>
               <div className="text-sm font-medium text-white/90">Video coming soon</div>
               <div className="text-xs text-white/60">Interactive walkthrough is in production</div>
-              <button
-                type="button"
-                className="mt-1 inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full bg-white/15 border border-white/25 text-white hover:bg-white/25 transition-colors"
-              >
-                <Play size={12} fill="currentColor" /> Preview outline
-              </button>
             </div>
           </>
         )}
