@@ -8,15 +8,15 @@ export default function CertificateCard({
   certificate, learnerName, courseTitle,
 }: { certificate: Certificate; learnerName: string; courseTitle: string }) {
   return (
-    <div className="relative w-full max-w-xl mx-auto rounded-2xl border border-clinical-200 bg-white shadow-sm overflow-hidden">
-      <div className="h-2 bg-gradient-to-r from-clinical-600 via-clinical-500 to-success-500" />
+    <div className="relative w-full max-w-xl mx-auto rounded-2xl border border-clinical-200 bg-white shadow-md overflow-hidden">
+      <div className="h-2.5 bg-gradient-to-r from-clinical-600 via-gold-500 to-brand-blue-600" />
       <div className="p-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-clinical-700">
             <ShieldCheck size={20} />
             <span className="text-sm font-semibold tracking-wide">ResusPro Academy</span>
           </div>
-          <Award size={28} className="text-clinical-300" />
+          <Award size={28} className="text-gold-500" />
         </div>
 
         <div className="mt-8 text-center">

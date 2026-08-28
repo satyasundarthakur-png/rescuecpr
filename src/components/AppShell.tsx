@@ -30,9 +30,12 @@ export default function AppShell() {
   return (
     <div className="min-h-screen flex">
       <aside className="w-60 shrink-0 bg-white border-r border-slate-200 flex flex-col">
-        <div className="px-5 py-5 border-b border-slate-100">
-          <div className="font-semibold text-clinical-700">ResusPro Academy</div>
-          <div className="text-xs text-slate-500">Simulation & Training</div>
+        <div className="px-5 py-5 border-b border-slate-100 bg-gradient-to-r from-clinical-600 to-clinical-500">
+          <div className="flex items-center gap-2">
+            <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-white/20 text-white font-bold text-xs">R+</span>
+            <div className="font-semibold text-white">ResusPro Academy</div>
+          </div>
+          <div className="text-xs text-clinical-50/80 mt-0.5">Simulation & Training</div>
         </div>
         <nav className="flex-1 px-2 py-4 space-y-1">
           {navItems.map(({ to, label, icon }) => (
