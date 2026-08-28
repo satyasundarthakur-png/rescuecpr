@@ -6,6 +6,7 @@ import {
   BackBlowsIcon, AbdominalThrustIcon,
 } from './bls-icons'
 import EcgTrace from './EcgTrace'
+import BeatMetronome from './BeatMetronome'
 
 // Visual training reference, paraphrased at a high level from publicly reported 2025
 // AHA/ILCOR adult BLS guideline highlights. Original layout, wording, and iconography —
@@ -63,21 +64,6 @@ function FlowCard({
           )}
         </div>
       )}
-    </div>
-  )
-}
-
-function BeatMetronome({ color }: { color: string }) {
-  return (
-    <div className="flex items-center gap-2.5 py-1">
-      {Array.from({ length: 8 }).map((_, i) => (
-        <span
-          key={i}
-          className="h-2.5 w-2.5 rounded-full"
-          style={{ backgroundColor: color, animation: `beat-dot 0.6s ease-in-out ${i * 0.075}s infinite` }}
-        />
-      ))}
-      <span className="text-[11px] font-semibold ml-1" style={{ color }}>~110 bpm</span>
     </div>
   )
 }

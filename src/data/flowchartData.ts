@@ -47,53 +47,6 @@ export const flowchartData: Partial<Record<CourseKey, FlowchartData>> = {
     ],
   },
 
-  ACLS: {
-    disclaimer: STANDARD_DISCLAIMER,
-    sections: [
-      {
-        theme: 'blue', icon: 'stethoscope', eyebrow: 'Recognize & Begin',
-        title: 'Cardiac Arrest Confirmed',
-        bullets: ['Start high-quality CPR immediately.', 'Attach monitor/defibrillator as soon as available.'],
-      },
-      {
-        theme: 'violet', icon: 'zap', eyebrow: 'Rhythm Check (~every 2 min)',
-        title: 'Shockable or Non-Shockable?',
-        bullets: ['Briefly pause compressions to check the rhythm, then resume immediately.'],
-        teachingNote: 'The rhythm check itself should take only a few seconds. Charging the defibrillator while compressions continue (a "hands-on" or peri-shock charge) is the single biggest lever for cutting the pre-shock pause, and pre-shock pauses are strongly linked to lower shock success and worse outcomes.',
-        branches: [
-          {
-            theme: 'green', label: 'Shockable — VF / pulseless VT', ecg: 'vf',
-            bullets: ['Resume CPR while charging → deliver 1 shock → resume CPR immediately for 2 min.'],
-          },
-          {
-            theme: 'orange', label: 'Non-shockable — PEA / Asystole', ecg: 'asystole',
-            bullets: ['Resume CPR immediately for 2 min → recheck rhythm.'],
-          },
-        ],
-      },
-      {
-        theme: 'amber', icon: 'heart', eyebrow: 'Throughout',
-        title: 'High-Quality CPR & Medications',
-        bullets: [
-          'Minimize interruptions; rotate compressors roughly every 2 minutes to avoid fatigue.',
-          'Vasopressor (e.g. epinephrine) per protocol timing; consider amiodarone or lidocaine for refractory VF/VT.',
-        ],
-        badge: 'Avoid excessive ventilation',
-      },
-      {
-        theme: 'gray', icon: 'clipboard', eyebrow: 'Throughout — Reversible Causes',
-        title: "Consider the H's and T's",
-        bullets: ['Hypovolemia, hypoxia, hydrogen ion (acidosis), hypo/hyperkalemia, hypothermia, tension pneumothorax, tamponade, toxins, thrombosis (pulmonary/coronary).'],
-        teachingNote: "PEA and asystole are rarely \"nothing to fix\" rhythms — they're often the presenting sign of one of these reversible causes. Running through the list systematically during compressions, rather than only when things stall, is what actually changes outcomes in non-shockable arrests.",
-      },
-      {
-        theme: 'teal', icon: 'activity', eyebrow: 'On ROSC',
-        title: 'Post-Cardiac-Arrest Care',
-        bullets: ['Optimize oxygenation/ventilation and hemodynamics; treat the underlying cause; targeted temperature management per protocol.'],
-      },
-    ],
-  },
-
   PALS: {
     disclaimer: STANDARD_DISCLAIMER,
     sections: [

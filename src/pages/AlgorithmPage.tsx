@@ -5,12 +5,13 @@ import { algorithms } from '../data/seed'
 import { flowchartData } from '../data/flowchartData'
 import { advance, choose, currentNode, score, startAlgorithm, type AlgorithmMode, type AlgorithmRunState } from '../engines/algorithmEngine'
 import BLSFlowchart from '../components/BLSFlowchart'
+import ACLSFlowchart from '../components/ACLSFlowchart'
 import AlgorithmFlowchart from '../components/AlgorithmFlowchart'
 
 export default function AlgorithmPage() {
   const { algorithmId } = useParams({ strict: false })
   const algorithm = algorithms.find((a) => a.id === algorithmId)
-  const hasFlowchart = algorithm ? algorithm.courseKey === 'BLS' || Boolean(flowchartData[algorithm.courseKey]) : false
+  const hasFlowchart = algorithm ? algorithm.courseKey === 'BLS' || algorithm.courseKey === 'ACLS' || Boolean(flowchartData[algorithm.courseKey]) : false
   const [mode, setMode] = useState<AlgorithmMode>('learn')
   const [view, setView] = useState<'practice' | 'flowchart'>(hasFlowchart ? 'flowchart' : 'practice')
   const [state, setState] = useState<AlgorithmRunState | null>(algorithm ? startAlgorithm(algorithm) : null)
@@ -75,6 +76,8 @@ export default function AlgorithmPage() {
 
       {view === 'flowchart' && algorithm.courseKey === 'BLS' ? (
         <BLSFlowchart />
+      ) : view === 'flowchart' && algorithm.courseKey === 'ACLS' ? (
+        <ACLSFlowchart />
       ) : view === 'flowchart' && flowchartData[algorithm.courseKey] ? (
         <AlgorithmFlowchart data={flowchartData[algorithm.courseKey]!} />
       ) : (
