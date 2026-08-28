@@ -1,10 +1,11 @@
-import { ShieldAlert, PhoneCall, HeartPulse, Zap, Wind, Syringe, ChevronDown } from 'lucide-react'
-import type { ReactNode } from 'react'
+import { ShieldAlert, PhoneCall, HeartPulse, Zap, Wind, Syringe, ChevronDown, GraduationCap } from 'lucide-react'
+import { useState, type ReactNode } from 'react'
 import {
   SceneScanIcon, SpeechBubbleIcon, PulseCheckIcon, PhoneCallIcon, AEDCabinetIcon,
-  CompressionIcon, MetronomePulseIcon, TorsoAEDPadsIcon, EcgShockableIcon, EcgNonShockableIcon,
+  CompressionIcon, TorsoAEDPadsIcon,
   BackBlowsIcon, AbdominalThrustIcon,
 } from './bls-icons'
+import EcgTrace from './EcgTrace'
 
 // Visual training reference, paraphrased at a high level from publicly reported 2025
 // AHA/ILCOR adult BLS guideline highlights. Original layout, wording, and iconography —
@@ -22,7 +23,7 @@ function Arrow() {
 }
 
 function FlowCard({
-  icon, eyebrow, title, bg, border, text, iconBg, children,
+  icon, eyebrow, title, bg, border, text, iconBg, children, teachingNote,
 }: {
   icon: ReactNode
   eyebrow: string
@@ -32,7 +33,9 @@ function FlowCard({
   text: string
   iconBg: string
   children: ReactNode
+  teachingNote?: string
 }) {
+  const [showTeaching, setShowTeaching] = useState(false)
   return (
     <div className="rounded-2xl border-2 p-5" style={{ backgroundColor: bg, borderColor: border }}>
       <div className="flex items-center gap-2 mb-2">
@@ -43,6 +46,38 @@ function FlowCard({
       </div>
       <div className="font-semibold text-slate-900 mb-2">{title}</div>
       <div className="text-sm text-slate-700 space-y-1.5">{children}</div>
+      {teachingNote && (
+        <div className="mt-3">
+          <button
+            type="button"
+            onClick={() => setShowTeaching((v) => !v)}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold hover:underline"
+            style={{ color: text }}
+          >
+            <GraduationCap size={13} /> {showTeaching ? 'Hide teaching note' : 'Why this matters'}
+          </button>
+          {showTeaching && (
+            <div className="mt-2 text-xs text-slate-600 bg-white/60 rounded-lg p-3 leading-relaxed">
+              {teachingNote}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function BeatMetronome({ color }: { color: string }) {
+  return (
+    <div className="flex items-center gap-2.5 py-1">
+      {Array.from({ length: 8 }).map((_, i) => (
+        <span
+          key={i}
+          className="h-2.5 w-2.5 rounded-full"
+          style={{ backgroundColor: color, animation: `beat-dot 0.6s ease-in-out ${i * 0.075}s infinite` }}
+        />
+      ))}
+      <span className="text-[11px] font-semibold ml-1" style={{ color }}>~110 bpm</span>
     </div>
   )
 }
@@ -62,6 +97,7 @@ export default function BLSFlowchart() {
         eyebrow="Step 1–3 · Initial Assessment"
         title="Scene Safety & Initial Assessment"
         bg="#E0F2FE" border="#0284C7" text="#0369A1" iconBg="#0284C7"
+        teachingNote="Scene safety comes first even though it feels like it slows you down — a rescuer who becomes a second casualty (traffic, electrical, violence, structural hazards) removes a helper instead of adding one. This single check is why 'approach' is never step zero."
       >
         <div className="flex items-start gap-3">
           <SceneScanIcon className="w-10 h-10 shrink-0 mt-0.5" style={{ color: '#0284C7' }} />
@@ -105,15 +141,18 @@ export default function BLSFlowchart() {
         eyebrow="2025 Guideline Emphasis"
         title="Start High-Quality CPR"
         bg="#FEF3C7" border="#D97706" text="#B45309" iconBg="#D97706"
+        teachingNote="Full chest recoil between compressions matters as much as the push itself — an incompletely released chest can't refill with blood, so the next compression moves far less volume. 'Push hard, push fast, let it come all the way back up' is really three separate skills, and recoil is the one people drop first as they fatigue."
       >
         <div className="flex items-start gap-4">
-          <CompressionIcon className="w-14 h-14 shrink-0" style={{ color: '#D97706' }} />
+          <span style={{ display: 'inline-block', animation: 'beat-pulse 0.6s ease-in-out infinite', transformOrigin: 'center' }}>
+            <CompressionIcon className="w-14 h-14 shrink-0" style={{ color: '#D97706' }} />
+          </span>
           <div className="flex-1 pt-1 space-y-1.5">
             <p>30 chest compressions : 2 rescue breaths.</p>
             <p>Rate 100–120/min · Depth 2–2.4 in (5–6 cm), allow full recoil.</p>
           </div>
         </div>
-        <MetronomePulseIcon className="w-full h-8 mt-1" style={{ color: '#D97706' }} />
+        <BeatMetronome color="#D97706" />
         <p className="inline-flex items-center gap-1.5 mt-1 px-2 py-1 rounded-full bg-white/70 text-xs font-semibold" style={{ color: '#B45309' }}>
           <Zap size={12} /> Minimize interruptions · avoid hyperventilation
         </p>
@@ -138,12 +177,12 @@ export default function BLSFlowchart() {
         <div className="grid sm:grid-cols-2 gap-3">
           <div className="rounded-xl border-2 p-3.5" style={{ backgroundColor: '#DCFCE7', borderColor: '#16A34A' }}>
             <div className="text-xs font-bold uppercase tracking-wide mb-1" style={{ color: '#15803D' }}>Shockable — VF / pulseless VT</div>
-            <EcgShockableIcon className="w-full h-8 my-1" style={{ color: '#16A34A' }} />
+            <EcgTrace pattern="vf" color="#16A34A" className="w-full h-8 my-1" />
             <p className="text-sm text-slate-700">Deliver 1 shock → immediately resume CPR for 2 minutes.</p>
           </div>
           <div className="rounded-xl border-2 p-3.5" style={{ backgroundColor: '#FFEDD5', borderColor: '#EA580C' }}>
             <div className="text-xs font-bold uppercase tracking-wide mb-1" style={{ color: '#C2410C' }}>Non-shockable — Asystole / PEA</div>
-            <EcgNonShockableIcon className="w-full h-8 my-1" style={{ color: '#EA580C' }} />
+            <EcgTrace pattern="asystole" color="#EA580C" className="w-full h-8 my-1" />
             <p className="text-sm text-slate-700">Resume CPR immediately for 2 minutes → recheck rhythm every 2 minutes.</p>
           </div>
         </div>

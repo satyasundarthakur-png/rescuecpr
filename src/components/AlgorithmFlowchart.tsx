@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import type { ReactNode } from 'react'
-import { ChevronDown, ShieldAlert, PhoneCall, HeartPulse, Zap, Wind, ClipboardList, Stethoscope, Baby, Activity } from 'lucide-react'
+import { ChevronDown, ShieldAlert, PhoneCall, HeartPulse, Zap, Wind, ClipboardList, Stethoscope, Baby, Activity, GraduationCap } from 'lucide-react'
+import EcgTrace, { type EcgPattern } from './EcgTrace'
 
 export type FlowchartTheme = 'blue' | 'red' | 'amber' | 'violet' | 'teal' | 'gray' | 'green' | 'orange'
 
@@ -32,6 +34,7 @@ export interface FlowchartBranch {
   theme: FlowchartTheme
   label: string
   bullets: string[]
+  ecg?: EcgPattern
 }
 
 export interface FlowchartSection {
@@ -42,6 +45,7 @@ export interface FlowchartSection {
   bullets: string[]
   badge?: string
   branches?: FlowchartBranch[]
+  teachingNote?: string
 }
 
 export interface FlowchartData {
@@ -58,6 +62,7 @@ function Arrow() {
 }
 
 function SectionCard({ section }: { section: FlowchartSection }) {
+  const [showTeaching, setShowTeaching] = useState(false)
   const t = THEME[section.theme]
   const Icon = ICONS[section.icon]
   return (
@@ -84,12 +89,30 @@ function SectionCard({ section }: { section: FlowchartSection }) {
             return (
               <div key={i} className="rounded-xl border-2 p-3.5" style={{ backgroundColor: bt.bg, borderColor: bt.border }}>
                 <div className="text-xs font-bold uppercase tracking-wide mb-1" style={{ color: bt.text }}>{br.label}</div>
+                {br.ecg && <EcgTrace pattern={br.ecg} color={bt.border} className="w-full h-8 my-1.5" />}
                 <div className="text-sm text-slate-700 space-y-1">
                   {br.bullets.map((b, j) => <p key={j}>{b}</p>)}
                 </div>
               </div>
             )
           })}
+        </div>
+      )}
+      {section.teachingNote && (
+        <div className="mt-3">
+          <button
+            type="button"
+            onClick={() => setShowTeaching((v) => !v)}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold hover:underline"
+            style={{ color: t.text }}
+          >
+            <GraduationCap size={13} /> {showTeaching ? 'Hide teaching note' : 'Why this matters'}
+          </button>
+          {showTeaching && (
+            <div className="mt-2 text-xs text-slate-600 bg-white/60 rounded-lg p-3 leading-relaxed">
+              {section.teachingNote}
+            </div>
+          )}
         </div>
       )}
     </div>

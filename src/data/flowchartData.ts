@@ -59,13 +59,14 @@ export const flowchartData: Partial<Record<CourseKey, FlowchartData>> = {
         theme: 'violet', icon: 'zap', eyebrow: 'Rhythm Check (~every 2 min)',
         title: 'Shockable or Non-Shockable?',
         bullets: ['Briefly pause compressions to check the rhythm, then resume immediately.'],
+        teachingNote: 'The rhythm check itself should take only a few seconds. Charging the defibrillator while compressions continue (a "hands-on" or peri-shock charge) is the single biggest lever for cutting the pre-shock pause, and pre-shock pauses are strongly linked to lower shock success and worse outcomes.',
         branches: [
           {
-            theme: 'green', label: 'Shockable — VF / pulseless VT',
+            theme: 'green', label: 'Shockable — VF / pulseless VT', ecg: 'vf',
             bullets: ['Resume CPR while charging → deliver 1 shock → resume CPR immediately for 2 min.'],
           },
           {
-            theme: 'orange', label: 'Non-shockable — PEA / Asystole',
+            theme: 'orange', label: 'Non-shockable — PEA / Asystole', ecg: 'asystole',
             bullets: ['Resume CPR immediately for 2 min → recheck rhythm.'],
           },
         ],
@@ -83,6 +84,7 @@ export const flowchartData: Partial<Record<CourseKey, FlowchartData>> = {
         theme: 'gray', icon: 'clipboard', eyebrow: 'Throughout — Reversible Causes',
         title: "Consider the H's and T's",
         bullets: ['Hypovolemia, hypoxia, hydrogen ion (acidosis), hypo/hyperkalemia, hypothermia, tension pneumothorax, tamponade, toxins, thrombosis (pulmonary/coronary).'],
+        teachingNote: "PEA and asystole are rarely \"nothing to fix\" rhythms — they're often the presenting sign of one of these reversible causes. Running through the list systematically during compressions, rather than only when things stall, is what actually changes outcomes in non-shockable arrests.",
       },
       {
         theme: 'teal', icon: 'activity', eyebrow: 'On ROSC',
@@ -99,6 +101,7 @@ export const flowchartData: Partial<Record<CourseKey, FlowchartData>> = {
         theme: 'blue', icon: 'baby', eyebrow: 'Step 1 · Rapid Assessment',
         title: 'Pediatric Assessment Triangle',
         bullets: ['Appearance, work of breathing, and circulation/skin — a quick visual read before you touch the patient.'],
+        teachingNote: "The triangle is deliberately hands-off — you're forming a general impression from across the room before any exam. Most experienced pediatric providers can flag a sick-looking child correctly from this alone, which is what makes it useful for fast triage rather than diagnosis.",
       },
       {
         theme: 'red', icon: 'phone', eyebrow: 'If unresponsive · no normal breathing · no pulse',
@@ -119,8 +122,8 @@ export const flowchartData: Partial<Record<CourseKey, FlowchartData>> = {
         title: 'Shockable or Non-Shockable?',
         bullets: ['Attach AED/monitor as soon as available and follow prompts.'],
         branches: [
-          { theme: 'green', label: 'Shockable — VF / pulseless VT', bullets: ['Shock at weight-based dose → resume CPR immediately.'] },
-          { theme: 'orange', label: 'Non-shockable — PEA / Asystole', bullets: ['Resume CPR immediately → recheck rhythm.'] },
+          { theme: 'green', label: 'Shockable — VF / pulseless VT', ecg: 'vf', bullets: ['Shock at weight-based dose → resume CPR immediately.'] },
+          { theme: 'orange', label: 'Non-shockable — PEA / Asystole', ecg: 'asystole', bullets: ['Resume CPR immediately → recheck rhythm.'] },
         ],
       },
     ],
@@ -133,6 +136,7 @@ export const flowchartData: Partial<Record<CourseKey, FlowchartData>> = {
         theme: 'blue', icon: 'baby', eyebrow: 'Step 1 · Initial Steps',
         title: 'Warm, Dry, Stimulate, Position Airway',
         bullets: ['Warm and dry the newborn, position the airway, and stimulate — clear the airway only if needed.'],
+        teachingNote: 'Most newborns who need help respond to these initial steps alone. Because the vast majority of neonatal resuscitation is a ventilation problem rather than a circulation problem, effective PPV is the single most important intervention — compressions and medications are needed far less often than in adult arrest.',
       },
       {
         theme: 'violet', icon: 'activity', eyebrow: 'Step 2 · Assess',
@@ -164,6 +168,7 @@ export const flowchartData: Partial<Record<CourseKey, FlowchartData>> = {
         theme: 'red', icon: 'shield', eyebrow: 'Step 0 · Preparation',
         title: 'Trauma Team Activation & Scene Safety',
         bullets: ['Activate the trauma team per your center\'s criteria; confirm scene safety and standard precautions.'],
+        teachingNote: 'The primary survey is deliberately ordered by what kills fastest, not by anatomy — an airway problem kills in minutes, a breathing problem in minutes, a circulation problem can be slower. Treat life threats as you find them in each step rather than deferring everything to the end.',
       },
       {
         theme: 'blue', icon: 'stethoscope', eyebrow: 'Primary Survey · A',
