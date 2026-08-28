@@ -198,3 +198,12 @@
     border-color: oklch(0.72 0.15 78 / 60%);
   }
 }
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+  }
+}
